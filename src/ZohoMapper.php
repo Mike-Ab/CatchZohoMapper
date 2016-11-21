@@ -10,8 +10,9 @@ class ZohoMapper
     private $token;
     private $url = null;
     protected $recordType;
-    
-    public function __construct($token, $recordType) {
+
+    public function __construct($token, $recordType)
+    {
         if (!$token) {
             throw new \Exception('Missing auth token from Zoho');
         }
@@ -21,8 +22,8 @@ class ZohoMapper
         $this->token = $token;
         $this->recordType = $recordType;
     }
-    
-    public function insertRecord ($record, $isApproval = false)
+
+    public function insertRecords($record, $isApproval = false)
     {
         $options = (new ZohoOperationParams($this->token))
             ->setXmlData(Zoho::generateXML($record, $this->recordType));
@@ -34,7 +35,7 @@ class ZohoMapper
         );
     }
 
-    public function updateRecord ($recordId, array $updates)
+    public function updateRecords($recordId, array $updates)
     {
         $options = (new ZohoOperationParams($this->token))
             ->setId($recordId)
@@ -44,7 +45,7 @@ class ZohoMapper
         );
     }
 
-    public function getRecordById ($recordId, $includeNull = false)
+    public function getRecordById($recordId, $includeNull = false)
     {
         $options = (new ZohoOperationParams($this->token))
             ->setId($recordId)
@@ -59,12 +60,13 @@ class ZohoMapper
 
     public function getUsers($type = 'AllUsers')
     {
-        $options= (new ZohoOperationParams($this->token))
-            ->setType($type)->setWfTrigger('false');
+        $options = (new ZohoOperationParams($this->token))
+            ->setType($type);
         return ((new ZohoResponse)->handleResponse(
             $this->execute($options), $this->recordType)
         );
     }
+
     private function execute(ZohoOperationParams $params, $method = 'POST')
     {
         try {
@@ -73,7 +75,7 @@ class ZohoMapper
                 'form_params' => $params::getParams()
             ]);
             return ($attempt->getBody());
-        }catch (ClientException $e){
+        } catch (ClientException $e) {
             throw new \Exception($e->getMessage(), $e->getCode());
         }
 

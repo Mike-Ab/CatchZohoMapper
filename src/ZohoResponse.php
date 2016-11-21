@@ -38,7 +38,7 @@ class ZohoResponse
 
     }
 
-    public function getRecord()
+    public function getRecordDetails()
     {
         return $this->recordDetails;
     }
@@ -69,10 +69,10 @@ class ZohoResponse
         $response = (json_decode($responseObject, true));
         self::checkForErrors($response);
         switch ($operation) {
-            case 'insertRecord':
+            case 'insertRecords':
                 return $this->populateResponse($this->formResponseArray($response));
                 break;
-            case 'updateRecord':
+            case 'updateRecords':
                 return $this->populateResponse($this->formResponseArray($response));
                 break;
             case 'getRecordById':
@@ -81,10 +81,10 @@ class ZohoResponse
                 break;
             case 'getUsers':
                 return $this->populateResponse(
-                    $this->formGetUsersResponseArray($response, $recordType));
+                    $this->formGetUsersResponseArray($response));
                 break;
             default:
-                throw new \Exception('Invalide operation "'.$operation.'""');
+                throw new \Exception('Invalid operation "'.$operation.'""');
                 break;
         }
     }
@@ -140,10 +140,22 @@ class ZohoResponse
     {
         $response['message'] = $response['response']['result']['message'];
         $response['uri'] = $response['response']['uri'];
-        array_walk($response['response']['result']['recorddetail']['FL'],
-            function ($details) use (&$response) {
-                $response['recordDetails'][$details['val']] = $details['content'];
-            });
+        $responseRecordDetails = $response['response']['result']['recorddetail'];
+        if (isset($responseRecordDetails['FL'])) {
+            echo 'SINGLE ';
+            array_walk($responseRecordDetails['FL'],
+                function ($details) use (&$response) {
+                    $response['recordDetails'][$details['val']] = $details['content'];
+                });
+        }else {
+            echo 'Multiple ';
+            foreach ($responseRecordDetails as $index => $record){
+                array_walk($record['FL'],
+                    function ($details) use (&$response, $index) {
+                        $response['recordDetails'][$index][$details['val']] = $details['content'];
+                    });
+            }
+        }
         unset($response['response']);
         $response['response'] = $response;
         return $response;

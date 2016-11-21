@@ -36,11 +36,21 @@ class ZohoServiceProvider
         $xml = '';
         $index = 0;
         $xml .= "<$recordType>";
-        $xml .= "<row no='".++$index."'>";
-        foreach ($data as $key => $val){
-            $xml .= "<FL val='$key'><![CDATA[$val]]></FL>";
+        if (isset ($data[0]) && is_array($data[0])) {
+            foreach ($data as $row) {
+                $xml .= "<row no='" . ++$index . "'>";
+                foreach ($row as $key => $val) {
+                    $xml .= "<FL val='$key'><![CDATA[$val]]></FL>";
+                }
+                $xml .= "</row>";
+            }
+        }else {
+            $xml .= "<row no='1'>";
+            foreach ($data as $key => $val) {
+                $xml .= "<FL val='$key'><![CDATA[$val]]></FL>";
+            }
+            $xml .= "</row>";
         }
-        $xml .= "</row>";
         $xml .= "</$recordType>";
         return $xml;
     }
