@@ -32,6 +32,11 @@ class ZohoResponse
      */
     protected $recordDetails;
 
+    /**
+     * @var null
+     */
+    protected $module = null;
+
 
     public function __construct($responseObject = null)
     {
@@ -63,6 +68,14 @@ class ZohoResponse
         return $this->uri;
     }
 
+    /**
+     * @return null
+     */
+    public function getModule()
+    {
+        return $this->module;
+    }
+
     public function handleResponse($responseObject, $recordType = false)
     {
         $operation = debug_backtrace()[1]['function'];
@@ -83,8 +96,13 @@ class ZohoResponse
                 return $this->populateResponse(
                     $this->formGetUsersResponseArray($response));
                 break;
+            case 'getFields':
+                $this->module = new ZohoModule($recordType);
+                return $this->populateResponse(
+                    $this->formGetFiledsResponseArray($response, $recordType));
+                break;
             default:
-                throw new \Exception('Invalid operation "'.$operation.'""');
+                throw new \Exception('Invalid operation :'.$operation);
                 break;
         }
     }
@@ -134,6 +152,45 @@ class ZohoResponse
         unset($response['response']);
         $response['response'] = $response;
         return $response;
+    }
+
+
+    private function formGetFiledsResponseArray(array $response, $recordType)
+    {
+        $response['message'] = 'Fields fetched successfully';
+        $response['uri'] = null;
+        $response['recordDetails'] = null;
+        if (!isset($response[$recordType]['section'])) {
+            throw new \Exception('Error fetching field info: Section');
+        }
+        foreach ($response[$recordType]['section'] as $index => $responseSection){
+            $section = (new ZohoSection)->setModule($recordType)
+                ->setName($responseSection['dv'])->setLabel($responseSection['name'])
+                ->setIndex($index);
+            if (isset($responseSection['FL'])){
+                if (isset($responseSection['FL']['dv'])){ // that is a single field section
+                    $field = new ZohoField($responseSection['FL']);
+                    // add the field to the section
+                    $section->addField($field);
+                    // add the field to the response
+                    $this->module->addField($field);
+                    $response['recordDetails'][] = $field->getFieldInfo();
+                }else {
+                    foreach ($responseSection['FL'] as $fieldInfo) {
+                        $field = new ZohoField($fieldInfo);
+                        // add the field to the section
+                        $section->addField($field);
+                        // add the field to the response
+                        $this->module->addField($field);
+                        $response['recordDetails'][] = $field->getFieldInfo();
+                    }
+                }
+            }
+            $this->module->addSection($section);
+        }
+        $response['response'] = $response;
+        return $response;
+
     }
 
     private function formResponseArray(array $response)

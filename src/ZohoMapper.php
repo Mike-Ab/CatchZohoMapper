@@ -1,12 +1,12 @@
 <?php
 namespace CatchZohoMapper;
 
-use GuzzleHttp\Client;
-use CatchZohoMapper\ZohoServiceProvider as Zoho;
-use GuzzleHttp\Exception\ClientException;
+use CatchZohoMapper\Traits\ZohoModuleOperations;
 
 class ZohoMapper
 {
+    use ZohoModuleOperations;
+
     private $token;
     private $url = null;
     protected $recordType;
@@ -23,61 +23,13 @@ class ZohoMapper
         $this->recordType = $recordType;
     }
 
-    public function insertRecords($record, $isApproval = false)
-    {
-        $options = (new ZohoOperationParams($this->token))
-            ->setXmlData(Zoho::generateXML($record, $this->recordType));
-        if (!$isApproval) {
-            $options->setIsApproval('false');
-        }
-        return ((new ZohoResponse)->handleResponse(
-            $this->execute($options))
-        );
-    }
-
-    public function updateRecords($recordId, array $updates)
-    {
-        $options = (new ZohoOperationParams($this->token))
-            ->setId($recordId)
-            ->setXmlData(Zoho::generateXML($updates, $this->recordType));
-        return ((new ZohoResponse)->handleResponse(
-            $this->execute($options))
-        );
-    }
-
-    public function getRecordById($recordId, $includeNull = false)
-    {
-        $options = (new ZohoOperationParams($this->token))
-            ->setId($recordId)
-            ->setWfTrigger(null);
-        if ($includeNull) {
-            $options->setNewFormat(1);
-        }
-        return ((new ZohoResponse)->handleResponse(
-            $this->execute($options), $this->recordType)
-        );
-    }
-
     public function getUsers($type = 'AllUsers')
     {
         $options = (new ZohoOperationParams($this->token))
-            ->setType($type);
+            ->setUserType($type);
         return ((new ZohoResponse)->handleResponse(
-            $this->execute($options), $this->recordType)
+            $this->execute($options))
         );
     }
 
-    private function execute(ZohoOperationParams $params, $method = 'POST')
-    {
-        try {
-            $http = new Client(['verify' => false]);
-            $attempt = $http->request('POST', Zoho::generateURL($this->recordType), [
-                'form_params' => $params::getParams()
-            ]);
-            return ($attempt->getBody());
-        } catch (ClientException $e) {
-            throw new \Exception($e->getMessage(), $e->getCode());
-        }
-
-    }
 }

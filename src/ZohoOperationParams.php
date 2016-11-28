@@ -103,11 +103,26 @@ class ZohoOperationParams
     }
 
     /**
+     * Sets the type of records (varied use)
+     *
      * @param string $type
      * @return $this
      * @throws \Exception
      */
     public function setType($type)
+    {
+        self::$type = $type;
+        return $this;
+    }
+
+    /**
+     * Sets the type for getUsers
+     *
+     * @param string $type
+     * @return $this
+     * @throws \Exception
+     */
+    public function setUserType($type)
     {
         if (!in_array($type, ZohoServiceProvider::allowedUserTypes())){
             throw new \Exception('Invalid users type parameter', 6003);
