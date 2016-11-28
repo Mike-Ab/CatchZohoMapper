@@ -45,6 +45,13 @@ trait ZohoModuleOperations
         );
     }
 
+    /**
+     * Provides ZohoModule instace containing all the module details
+     * accessible by getModule(). Also provides the fileds in RecordDetails
+     *
+     * @param bool $mandatory
+     * @return ZohoResponse
+     */
     public function getFields($mandatory = false)
     {
         $options = (new ZohoOperationParams($this->token));
@@ -53,11 +60,6 @@ trait ZohoModuleOperations
         }
         return (new ZohoResponse)->handleResponse(
             $this->execute($options), $this->recordType);
-    }
-
-    public function getSections()
-    {
-        return $this->getFields()->sections();
     }
 
 
