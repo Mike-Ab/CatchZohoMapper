@@ -87,9 +87,23 @@ class ZohoOperationParams
     /**
      * Related only to getUsers function
      *
-     * @var string
+     * @var null $type
      */
-    protected static $type;
+    protected static $type = null;
+
+    /**
+     * File content for uploads
+     *
+     * @var null
+     */
+    protected static $content = null;
+
+    /**
+     * Attachment URL
+     *
+     * @var null
+     */
+    protected static $attachmentUrl = null;
 
     /**
      * ZohoOperationParams constructor.
@@ -266,6 +280,38 @@ class ZohoOperationParams
         self::$id = $id;
         return $this;
     }
+
+    /**
+     * @param null $content
+     * @return $this
+     */
+    public function setContent($content)
+    {
+        self::$content = $content;
+        return $this;
+    }
+
+    /**
+     * @param null $attachmentUrl
+     * @return $this
+     */
+    public function setAttachmentUrl($attachmentUrl)
+    {
+        self::$attachmentUrl = $attachmentUrl;
+        return $this;
+    }
+
+    /**
+     * Check if a parameter is set
+     *
+     * @param $param
+     * @return bool
+     */
+    public static function has($param)
+    {
+        return (isset(self::$$param)) ? true : false;
+    }
+
     /**
      * Generates prepared params for the call to Zoho
      *
@@ -280,6 +326,46 @@ class ZohoOperationParams
             }
         }
         return $params;
+    }
+
+    /**
+     * @return null
+     */
+    public static function getContent()
+    {
+        return self::$content;
+    }
+
+    /**
+     * @return null
+     */
+    public static function getAttachmentUrl()
+    {
+        return self::$attachmentUrl;
+    }
+
+    /**
+     * @return null
+     */
+    public static function getId()
+    {
+        return self::$id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public static function getAuthtoken()
+    {
+        return self::$authtoken;
+    }
+
+    /**
+     * @return mixed
+     */
+    public static function getScope()
+    {
+        return self::$scope;
     }
 
 }

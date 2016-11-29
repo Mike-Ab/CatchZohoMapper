@@ -18,6 +18,9 @@ class ZohoServiceProvider
      */
     public static function generateURL($module, $responseType = 'json')
     {
+        if (debug_backtrace()[2]['function'] == "getModules") {
+            $module = 'Info';
+        }
         return 'https://crm.zoho.com/crm/private/'
             .$responseType.'/'
             .$module.'/'
@@ -40,14 +43,14 @@ class ZohoServiceProvider
             foreach ($data as $row) {
                 $xml .= "<row no='" . ++$index . "'>";
                 foreach ($row as $key => $val) {
-                    $xml .= "<FL val='$key'><![CDATA[$val]]></FL>";
+                    $xml .= "<FL val='$key'><![CDATA[str_replace('&', 'and', $val)]]></FL>";
                 }
                 $xml .= "</row>";
             }
         }else {
             $xml .= "<row no='1'>";
             foreach ($data as $key => $val) {
-                $xml .= "<FL val='$key'><![CDATA[$val]]></FL>";
+                $xml .= "<FL val='$key'><![CDATA[str_replace('&', 'and', $val)]]></FL>";
             }
             $xml .= "</row>";
         }

@@ -54,7 +54,8 @@ trait ZohoModuleOperations
      */
     public function getFields($mandatory = false)
     {
-        $options = (new ZohoOperationParams($this->token));
+        $options = (new ZohoOperationParams($this->token))
+            ->setWfTrigger(null);
         if ($mandatory) {
             $options->setType(2);
         }
@@ -74,6 +75,36 @@ trait ZohoModuleOperations
         } catch (ClientException $e) {
             throw new \Exception($e->getMessage(), $e->getCode());
         }
+    }
 
+    private function sendFile(ZohoOperationParams $options)
+    {
+        try {
+            $http = new Client(['verify' => false]);
+            $attempt = $http->request('POST', Zoho::generateURL($this->recordType), [
+                'multipart' => [
+                    [
+                        'name' => 'id',
+                        'contents' => $options::getId()
+                    ],
+                    [
+                        'name' => 'authtoken',
+                        'contents' => $options::getAuthtoken()
+                    ],
+                    [
+                        'name' => 'scope',
+                        'contents' => $options::getScope()
+                    ],
+                    [
+                        'Content-type' => 'multipart/form-data',
+                        'name' => 'content',
+                        'contents' => fopen($options::getContent(), 'r')
+                    ]
+                ]
+            ]);
+            return ($attempt->getBody());
+        } catch (ClientException $e) {
+            throw new \Exception($e->getMessage(), $e->getCode());
+        }
     }
 }

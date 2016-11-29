@@ -88,6 +88,10 @@ class ZohoResponse
             case 'updateRecords':
                 return $this->populateResponse($this->formResponseArray($response));
                 break;
+            case 'uploadFile':
+                return $this->populateResponse(
+                    $this->formResponseArray($response));
+                break;
             case 'getRecordById':
                 return $this->populateResponse(
                     $this->formGetByIdResponseArray($response, $recordType));
@@ -100,6 +104,10 @@ class ZohoResponse
                 $this->module = new ZohoModule($recordType);
                 return $this->populateResponse(
                     $this->formGetFiledsResponseArray($response, $recordType));
+                break;
+            case 'getModules':
+                return $this->populateResponse(
+                    $this->formGetModuleResponseArray($response));
                 break;
             default:
                 throw new \Exception('Invalid operation :'.$operation);
@@ -114,6 +122,47 @@ class ZohoResponse
             $this->$key = $val;
         }
         return $this;
+    }
+
+    private function formUploadFileResponseArray(array $response)
+    {
+        $response['message'] = 'Record(s) fetched successfully';
+        $response['uri'] = $response['response']['uri'];
+        var_dump($response);
+        $modules = [];
+        foreach($response['response']['result']['row'] as $module){
+            $modules[$module['no']] = [
+                'id' => $module['id'],
+                'singular' => $module['sl'],
+                'plural' => $module['pl'],
+                'devName' => isset($module['content']) ? $module['content'] : $module['pl'],
+                'gt'    => $module['gt']
+            ];
+        }
+        $response['recordDetails'] = $modules;
+        unset($response['response']);
+        $response['response'] = $response;
+        return $response;
+    }
+
+    private function formGetModuleResponseArray(array $response)
+    {
+        $response['message'] = 'Record(s) fetched successfully';
+        $response['uri'] = $response['response']['uri'];
+        $modules = [];
+        foreach($response['response']['result']['row'] as $module){
+            $modules[$module['no']] = [
+                'id' => $module['id'],
+                'singular' => $module['sl'],
+                'plural' => $module['pl'],
+                'devName' => isset($module['content']) ? $module['content'] : $module['pl'],
+                'gt'    => $module['gt']
+            ];
+        }
+        $response['recordDetails'] = $modules;
+        unset($response['response']);
+        $response['response'] = $response;
+        return $response;
     }
 
     private function formGetByIdResponseArray(array $response, $recordType)
@@ -170,17 +219,13 @@ class ZohoResponse
             if (isset($responseSection['FL'])){
                 if (isset($responseSection['FL']['dv'])){ // that is a single field section
                     $field = new ZohoField($responseSection['FL']);
-                    // add the field to the section
                     $section->addField($field);
-                    // add the field to the response
                     $this->module->addField($field);
                     $response['recordDetails'][] = $field->getFieldInfo();
                 }else {
                     foreach ($responseSection['FL'] as $fieldInfo) {
                         $field = new ZohoField($fieldInfo);
-                        // add the field to the section
                         $section->addField($field);
-                        // add the field to the response
                         $this->module->addField($field);
                         $response['recordDetails'][] = $field->getFieldInfo();
                     }
@@ -199,13 +244,13 @@ class ZohoResponse
         $response['uri'] = $response['response']['uri'];
         $responseRecordDetails = $response['response']['result']['recorddetail'];
         if (isset($responseRecordDetails['FL'])) {
-            echo 'SINGLE ';
+//            echo 'SINGLE ';
             array_walk($responseRecordDetails['FL'],
                 function ($details) use (&$response) {
                     $response['recordDetails'][$details['val']] = $details['content'];
                 });
         }else {
-            echo 'Multiple ';
+//            echo 'Multiple ';
             foreach ($responseRecordDetails as $index => $record){
                 array_walk($record['FL'],
                     function ($details) use (&$response, $index) {
