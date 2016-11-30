@@ -65,4 +65,9 @@ class ZohoServiceProvider
             'AdminUsers', 'ActiveConfirmedAdmins'
         ];
     }
+
+    public static function maxGetRecords()
+    {
+        return 200;
+    }
 }

@@ -94,7 +94,11 @@ class ZohoResponse
                 break;
             case 'getRecordById':
                 return $this->populateResponse(
-                    $this->formGetByIdResponseArray($response, $recordType));
+                    $this->formGetRecordsResponseArray($response, $recordType));
+                break;
+            case 'getRecords':
+                return $this->populateResponse(
+                    $this->formGetRecordsResponseArray($response, $recordType));
                 break;
             case 'getUsers':
                 return $this->populateResponse(
@@ -124,27 +128,6 @@ class ZohoResponse
         return $this;
     }
 
-    private function formUploadFileResponseArray(array $response)
-    {
-        $response['message'] = 'Record(s) fetched successfully';
-        $response['uri'] = $response['response']['uri'];
-        var_dump($response);
-        $modules = [];
-        foreach($response['response']['result']['row'] as $module){
-            $modules[$module['no']] = [
-                'id' => $module['id'],
-                'singular' => $module['sl'],
-                'plural' => $module['pl'],
-                'devName' => isset($module['content']) ? $module['content'] : $module['pl'],
-                'gt'    => $module['gt']
-            ];
-        }
-        $response['recordDetails'] = $modules;
-        unset($response['response']);
-        $response['response'] = $response;
-        return $response;
-    }
-
     private function formGetModuleResponseArray(array $response)
     {
         $response['message'] = 'Record(s) fetched successfully';
@@ -165,29 +148,25 @@ class ZohoResponse
         return $response;
     }
 
-    private function formGetByIdResponseArray(array $response, $recordType)
-    {
-        $response['message'] = 'Record(s) fetched successfully';
-        $response['uri'] = $response['response']['uri'];
-        array_walk($response['response']['result'][$recordType]['row']['FL'],
-            function ($details) use (&$response) {
-                $response['recordDetails'][$details['val']] = $details['content'];
-            });
-        unset($response['response']);
-        $response['response'] = $response;
-        return $response;
-    }
-
     private function formGetRecordsResponseArray(array $response, $recordType)
     {
         $response['message'] = 'Record(s) fetched successfully';
         $response['uri'] = $response['response']['uri'];
-        foreach ($response['response']['result'][$recordType] as $row){
-            array_walk($row['FL'], function ($details) use (&$response, $row) {
+        if (isset($response['response']['result'][$recordType]['row']['FL'])) {
+            // single Record
+            foreach ($response['response']['result'][$recordType] as $row) {
+                array_walk($row['FL'], function ($details) use (&$response, $row) {
                     $response['recordDetails'][$row['no']][$details['val']] = $details['content'];
                 });
+            }
+        }else {
+            // multiple records
+            foreach ($response['response']['result'][$recordType]['row'] as $record) {
+                array_walk($record['FL'], function ($details) use (&$response, $record) {
+                    $response['recordDetails'][$record['no']][$details['val']] = $details['content'];
+                });
+            }
         }
-
         unset($response['response']);
         $response['response'] = $response;
         return $response;

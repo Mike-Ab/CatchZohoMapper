@@ -85,6 +85,13 @@ class ZohoOperationParams
     protected static $id = null;
 
     /**
+     * Replaces id if provided
+     *
+     * @var null
+     */
+    protected static $idlist = null;
+
+    /**
      * Related only to getUsers function
      *
      * @var null $type
@@ -104,6 +111,26 @@ class ZohoOperationParams
      * @var null
      */
     protected static $attachmentUrl = null;
+
+    /**
+     * Filtering values
+     *
+     * @var null
+     */
+    protected static $lastModifiedTime = null;
+
+    public function setIdList (array $idList)
+    {
+        if (count($idList) > 1) {
+            if (isset (self::$id)) {
+                self::$id = null;
+            }
+            self::$idlist = implode(';', $idList);
+        }else {
+            self::$id = $idList[0];
+        }
+        return $this;
+    }
 
     /**
      * ZohoOperationParams constructor.
@@ -298,6 +325,16 @@ class ZohoOperationParams
     public function setAttachmentUrl($attachmentUrl)
     {
         self::$attachmentUrl = $attachmentUrl;
+        return $this;
+    }
+
+    /**
+     * @param null $lastModifiedTime
+     * @return $this
+     */
+    public function setLastModifiedTime($lastModifiedTime)
+    {
+        self::$lastModifiedTime = $lastModifiedTime;
         return $this;
     }
 
