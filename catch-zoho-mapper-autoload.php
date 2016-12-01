@@ -12,6 +12,7 @@ $mapping = array(
     'CatchZohoMapper\Traits\ZohoModule' => __DIR__ . '/src/Traits/ZohoModuleOperations.php',
     'CatchZohoMapper\Traits\Field' => __DIR__ . '/src/Traits/Field.php',
     'CatchZohoMapper\Traits\Section' => __DIR__ . '/src/Traits/Section.php',
+    'CatchZohoMapper\Traits\Singleton' => __DIR__ . '/src/Traits/Singleton.php',
     'GuzzleHttp\Client' => __DIR__ . '/vendor/guzzlehttp/guzzle/src/Client.php',
     'GuzzleHttp\ClientInterface' => __DIR__ . '/vendor/guzzlehttp/guzzle/src/ClientInterface.php',
     'GuzzleHttp\HandlerStack' => __DIR__ . '/vendor/guzzlehttp/guzzle/src/HandlerStack.php',

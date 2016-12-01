@@ -1,6 +1,8 @@
 <?php
 
 namespace CatchZohoMapper;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 
 /**
  * Description of ZohoServiceProvider
@@ -69,5 +71,84 @@ class ZohoServiceProvider
     public static function maxGetRecords()
     {
         return 200;
+    }
+
+    public static function formSearchCriteria(array $searchOptions)
+    {
+        $tempArray = [];
+        foreach ($searchOptions as $key => $option){
+            if (is_array($option)){
+                $tempArray[] = self::formAndCriteria($option);
+            }else {
+                $tempArray[] = '('.$key.':'.$option.')';
+            }
+        }
+        return (implode('OR',$tempArray));
+    }
+
+    private static function formAndCriteria(array $array)
+    {
+        $newArray = [];
+        foreach ($array as $key => $value) {
+            if (count($array) == 1) {
+                if (is_array($value)){
+                    $newArray[] = self::formAndCriteria($value);
+                }else {
+                    return '(' . $key . ':' . $value . ')';
+                }
+            }else {
+                if (is_array($value)){
+                    $newArray[] = self::formAndCriteria($value);
+                }else {
+                    $newArray[] = '(' . $key . ':' . $value . ')';
+                }
+            }
+        }
+        return '('.implode('AND', $newArray).')';
+    }
+
+    public static function execute(ZohoOperationParams $params, $method = 'POST')
+    {
+        var_dump($params::getParams());
+        try {
+            $http = new Client(['verify' => false]);
+            $attempt = $http->request('POST', self::generateURL($params::getRecordType()), [
+                'form_params' => $params::getParams()
+            ]);
+            return ($attempt->getBody());
+        } catch (ClientException $e) {
+            throw new \Exception($e->getMessage(), $e->getCode());
+        }
+    }
+
+    public static function sendFile(ZohoOperationParams $params)
+    {
+        try {
+            $http = new Client(['verify' => false]);
+            $attempt = $http->request('POST', self::generateURL($params::getRecordType()), [
+                'multipart' => [
+                    [
+                        'name' => 'id',
+                        'contents' => $params::getId()
+                    ],
+                    [
+                        'name' => 'authtoken',
+                        'contents' => $params::getAuthtoken()
+                    ],
+                    [
+                        'name' => 'scope',
+                        'contents' => $params::getScope()
+                    ],
+                    [
+                        'Content-type' => 'multipart/form-data',
+                        'name' => 'content',
+                        'contents' => fopen($params::getContent(), 'r')
+                    ]
+                ]
+            ]);
+            return ($attempt->getBody());
+        } catch (ClientException $e) {
+            throw new \Exception($e->getMessage(), $e->getCode());
+        }
     }
 }

@@ -14,8 +14,8 @@ interface ZohoModuleInterface
     public function getFields(); //
     public function getRelatedRecords();
     public function updateRelatedRecords();
-    public function uploadFile();
+    public function uploadFile();//
     public function downloadFile();
     public function deleteFile();
-    public function searchRecords();
+    public function searchRecords();//
 }

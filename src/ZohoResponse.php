@@ -100,6 +100,10 @@ class ZohoResponse
                 return $this->populateResponse(
                     $this->formGetRecordsResponseArray($response, $recordType));
                 break;
+            case 'searchRecords':
+                return $this->populateResponse(
+                    $this->formGetRecordsResponseArray($response, $recordType));
+                break;
             case 'getUsers':
                 return $this->populateResponse(
                     $this->formGetUsersResponseArray($response));

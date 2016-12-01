@@ -1,14 +1,15 @@
 <?php
 namespace CatchZohoMapper;
 
+use CatchZohoMapper\Traits\Singleton;
 use CatchZohoMapper\Traits\ZohoModuleOperations;
+use CatchZohoMapper\ZohoServiceProvider as Zoho;
 
 class ZohoMapper
 {
-    use ZohoModuleOperations;
+    use ZohoModuleOperations, Singleton;
 
     private $token;
-    private $url = null;
     protected $recordType;
 
     public function __construct($token, $recordType, $check = false)
@@ -37,21 +38,21 @@ class ZohoMapper
 
     public function getUsers($type = 'AllUsers')
     {
-        $options = (new ZohoOperationParams($this->token))
+        $options = (new ZohoOperationParams($this->token, $this->recordType))
             ->setUserType($type);
         return ((new ZohoResponse)->handleResponse(
-            $this->execute($options))
+            Zoho::execute($options))
         );
     }
 
     public function getModules($apiOnly = false)
     {
-        $options = (new ZohoOperationParams($this->token));
+        $options = (new ZohoOperationParams($this->token, $this->recordType));
         if ($apiOnly) {
             $options->setUserType('api');
         }
         return ((new ZohoResponse)->handleResponse(
-            $this->execute($options))
+            Zoho::execute($options))
         );
     }
 
@@ -60,7 +61,7 @@ class ZohoMapper
         if (!is_file ($filePath) || !file_exists ($filePath)){
             throw new \Exception('The file you are attempting to upload is missing');
         }
-        $options = (new ZohoOperationParams($this->token))
+        $options = (new ZohoOperationParams($this->token, $this->recordType))
             ->setId($recordId)
             ->setWfTrigger(null)
             ->setNewFormat(null)
@@ -68,12 +69,25 @@ class ZohoMapper
         if (!$attachmentUrl){
             $options->setContent($filePath);
             return (new ZohoResponse)->handleResponse(
-                $this->sendFile($options));
+                Zoho::sendFile($options));
         }else {
             $options->setAttachmentUrl($attachmentUrl);
             return (new ZohoResponse)->handleResponse(
-                $this->execute($options));
+                Zoho::execute($options));
         }
+    }
+
+    public function searchRecords(array $searchCriteria, $opts = false)
+    {
+        $options = (new ZohoOperationParams($this->token, $this->recordType))
+            ->setWfTrigger(null)
+            ->setVersion(null);
+        if ($opts) {
+            $options = $this->setOpts($options, $opts);
+        }
+        $options->setCriteria(Zoho::formSearchCriteria($searchCriteria));
+        return (new ZohoResponse)->handleResponse(
+            Zoho::execute($options), $this->recordType);
     }
 
 }

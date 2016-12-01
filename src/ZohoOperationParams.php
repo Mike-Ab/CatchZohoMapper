@@ -12,6 +12,10 @@ namespace CatchZohoMapper;
 class ZohoOperationParams
 {
     /**
+     * @var
+     */
+    protected static $recordType;
+    /**
      * @var $scope
      */
     protected static $scope = 'crmapi';
@@ -119,6 +123,13 @@ class ZohoOperationParams
      */
     protected static $lastModifiedTime = null;
 
+    /**
+     * For search function
+     *
+     * @var null
+     */
+    protected static $criteria = null;
+
     public function setIdList (array $idList)
     {
         if (count($idList) > 1) {
@@ -134,13 +145,36 @@ class ZohoOperationParams
 
     /**
      * ZohoOperationParams constructor.
-     * @param bool $authToken
+     *
+     * @param string|bool $authToken
+     * @param string|bool $recordType
      */
-    public function __construct($authToken = false)
+    public function __construct($authToken = false, $recordType = false)
     {
         if ($authToken) {
             $this->setAuthtoken($authToken);
         }
+        if ($recordType) {
+            $this->setRecordType($recordType);
+        }
+    }
+
+    /**
+     * @param mixed $recordType
+     */
+    private function setRecordType($recordType)
+    {
+        self::$recordType = $recordType;
+    }
+
+    /**
+     * @param null $criteria
+     * @return $this
+     */
+    public function setCriteria($criteria)
+    {
+        self::$criteria = $criteria;
+        return $this;
     }
 
     /**
@@ -362,8 +396,20 @@ class ZohoOperationParams
                 $params[$name] = $value;
             }
         }
+        if (isset($params['recordType'])){
+            unset ($params['recordType']);
+        }
         return $params;
     }
+
+    /**
+     * @return mixed
+     */
+    public static function getRecordType()
+    {
+        return self::$recordType;
+    }
+
 
     /**
      * @return null
