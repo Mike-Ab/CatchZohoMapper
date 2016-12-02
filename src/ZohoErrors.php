@@ -40,6 +40,13 @@ class ZohoErrors
         '4807'  => 'Exceeded file size limit',
         '4424'  => 'Invalid File Type',
         '4809'  => 'Exceeded storage space limit',
+        '4425'  => 'Unable to process your request. Please check whether you have given the valid record Id',
+    ];
+
+    public static $checkDuplicateCodes = [
+        '2000' => 'Record Added Successfully',
+        '2001' => 'Record Updated Successfully',
+        '2002' => 'Record Already Exists',
     ];
 
     public static function getMessage($errorCode)

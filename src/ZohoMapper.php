@@ -4,6 +4,7 @@ namespace CatchZohoMapper;
 use CatchZohoMapper\Traits\Singleton;
 use CatchZohoMapper\Traits\ZohoModuleOperations;
 use CatchZohoMapper\ZohoServiceProvider as Zoho;
+use GuzzleHttp\Psr7\Stream;
 
 class ZohoMapper
 {
@@ -75,6 +76,17 @@ class ZohoMapper
             return (new ZohoResponse)->handleResponse(
                 Zoho::execute($options));
         }
+    }
+
+    /**
+     * @param $attachmentId
+     * @return Stream
+     */
+    public function downloadFile($attachmentId)
+    {
+        $options = (new ZohoOperationParams($this->token, $this->recordType))
+            ->setId($attachmentId);
+        return Zoho::execute($options)->getContents();
     }
 
     public function searchRecords(array $searchCriteria, $opts = false)

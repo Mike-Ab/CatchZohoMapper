@@ -9,6 +9,8 @@
 namespace CatchZohoMapper;
 
 
+use GuzzleHttp\Exception\GuzzleException;
+
 class ZohoOperationParams
 {
     /**
@@ -29,14 +31,14 @@ class ZohoOperationParams
      * newFormat=1:To exclude fields with "null" values while inserting data from your CRM account.
      * newFormat=2:To include fields with "null" values while inserting data from your CRM account.
      *
-     * @var$newFormat
+     * @var int $newFormat
      */
     protected static $newFormat = 1;
 
     /**
-     * @var null $wfTrigger
+     * @var null|string $wfTrigger
      */
-    protected static $wfTrigger = 'true';
+    protected static $wfTrigger = null;
 
     /**
      * @var$xmlData
@@ -59,12 +61,12 @@ class ZohoOperationParams
     protected static $toIndex = null;
 
     /**
-     * @var null $sortColumnString
+     * @var null|string $sortColumnString
      */
     protected static $sortColumnString = null;
 
     /**
-     * @var null $sortOrderString
+     * @var null|string $sortOrderString
      */
     protected static $sortOrderString = null;
 
@@ -74,61 +76,67 @@ class ZohoOperationParams
     protected static $version = 2;
 
     /**
-     * @var null $isApproval
+     * @var null|bool $isApproval
      */
     protected static $isApproval = null;
 
     /**
-     * @var null $duplicateCheck
+     * @var null|Integer
      */
     protected static $duplicateCheck = null;
 
     /**
-     * @var null $id
+     * @var null $id|string
      */
     protected static $id = null;
 
     /**
      * Replaces id if provided
      *
-     * @var null
+     * @var null|array
      */
     protected static $idlist = null;
 
     /**
      * Related only to getUsers function
      *
-     * @var null $type
+     * @var null|string $type
      */
     protected static $type = null;
 
     /**
      * File content for uploads
      *
-     * @var null
+     * @var null|\GuzzleHttp\Psr7\Stream (FileInputStream)
      */
     protected static $content = null;
 
     /**
      * Attachment URL
      *
-     * @var null
+     * @var null|string
      */
     protected static $attachmentUrl = null;
 
     /**
      * Filtering values
      *
-     * @var null
+     * @var null|string (yyyy-MM-dd HH:mm:ss)
      */
     protected static $lastModifiedTime = null;
 
     /**
      * For search function
      *
-     * @var null
+     * @var null|string
      */
     protected static $criteria = null;
+
+    /**
+     * @var null|string
+     *
+     */
+    protected static $parentModule = null;
 
     public function setIdList (array $idList)
     {
@@ -165,6 +173,16 @@ class ZohoOperationParams
     private function setRecordType($recordType)
     {
         self::$recordType = $recordType;
+    }
+
+    /**
+     * @param null|string $parentModule
+     * @return $this
+     */
+    public function setParentModule($parentModule)
+    {
+        self::$parentModule = $parentModule;
+        return $this;
     }
 
     /**
@@ -207,19 +225,28 @@ class ZohoOperationParams
     }
 
     /**
-     * @param null $duplicateCheck
+     * Check or not for duplicates
+     * null - no check
+     * 1 - throw error
+     * 2 - update existing record
+     *
+     * @param null|integer $duplicateCheck
+     * @return $this
      */
     public function setDuplicateCheck($duplicateCheck)
     {
         self::$duplicateCheck = $duplicateCheck;
+        return $this;
     }
 
     /**
      * @param null $isApproval
+     * @return $this
      */
     public function setIsApproval($isApproval)
     {
         self::$isApproval = $isApproval;
+        return $this;
     }
 
     /**

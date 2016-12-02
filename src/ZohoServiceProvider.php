@@ -12,7 +12,7 @@ use GuzzleHttp\Exception\ClientException;
 class ZohoServiceProvider 
 {
     /**
-     * Generate the API endpoing needed for the certain API function
+     * Generate the API endpoint needed for the certain API function
      * 
      * @param string $module
      * @param string $responseType
@@ -30,7 +30,7 @@ class ZohoServiceProvider
     }
     
     /**
-     * Generate the XML from accociated array with the keys/values 
+     * Generate the XML from associated array with the keys/values
      * 
      * @param array $data
      * @param string $recordType
@@ -44,22 +44,32 @@ class ZohoServiceProvider
         if (isset ($data[0]) && is_array($data[0])) {
             foreach ($data as $row) {
                 $xml .= "<row no='" . ++$index . "'>";
-                foreach ($row as $key => $val) {
-                    $xml .= "<FL val='$key'><![CDATA[str_replace('&', 'and', $val)]]></FL>";
-                }
+                $xml = self::formXmlRow($row, $xml);
                 $xml .= "</row>";
             }
         }else {
             $xml .= "<row no='1'>";
-            foreach ($data as $key => $val) {
-                $xml .= "<FL val='$key'><![CDATA[str_replace('&', 'and', $val)]]></FL>";
-            }
+            $xml = self::formXmlRow($data, $xml);
             $xml .= "</row>";
         }
         $xml .= "</$recordType>";
         return $xml;
     }
 
+    private static function formXmlRow($row, $xml)
+    {
+        $noCDATAKey = ['id', 'Lead Status', 'Id'];
+        $noCDATAVal = ['true', 'false'];
+        foreach ($row as $key => $val) {
+            $val = str_replace('&', 'and', $val);
+            if (in_array($key, $noCDATAKey) || in_array($val, $noCDATAVal)){
+                $xml .= "<FL val='$key'>$val</FL>";
+            }else {
+                $xml .= "<FL val='$key'><![CDATA[$val]]></FL>";
+            }
+        }
+        return $xml;
+    }
     public static function allowedUserTypes()
     {
         return [
@@ -109,7 +119,6 @@ class ZohoServiceProvider
 
     public static function execute(ZohoOperationParams $params, $method = 'POST')
     {
-        var_dump($params::getParams());
         try {
             $http = new Client(['verify' => false]);
             $attempt = $http->request('POST', self::generateURL($params::getRecordType()), [
