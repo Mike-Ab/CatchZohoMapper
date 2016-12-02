@@ -1,6 +1,8 @@
 <?php
 namespace CatchZohoMapper\Traits;
 
+use CatchZohoMapper\ZohoErrors;
+use CatchZohoMapper\ZohoModule;
 use CatchZohoMapper\ZohoOperationParams;
 use CatchZohoMapper\ZohoResponse;
 use CatchZohoMapper\ZohoServiceProvider as Zoho;
@@ -9,14 +11,23 @@ trait ZohoModuleOperations
 {
     /**
      * Insert record or an array of records
-     * Allowed opts : 'newFormat|includeNull', 'wfTrigger', 'duplicateCheck', 'isApproval', 'version'
+     * Allowed opts : 'newFormat|includeNull', 'wfTrigger', 'duplicateCheck', 'isApproval', 'version', 'checkMandatory'
      *
      * @param $record
      * @param bool $opts
+     * @param bool $checkMandatory
      * @return ZohoResponse
      */
-    public function insertRecords($record, $opts = false)
+    public function insertRecords($record, $opts = false, $checkMandatory = false)
     {
+        if ($checkMandatory) {
+            $this->checkMandatory($record);
+        }
+        if ($opts){
+            if (array_key_exists('checkMandatory', $opts)){
+                $this->checkMandatory($record);
+            }
+        }
         $options = (new ZohoOperationParams($this->token, $this->recordType))
             ->setXmlData(Zoho::generateXML($record, $this->recordType));
         if (count($record) > 1){
@@ -232,6 +243,21 @@ trait ZohoModuleOperations
             $options->setLastModifiedTime(date('Y-m-d H:i:s', strtotime(str_replace('/', '-', $opts['lastModifiedTime']))));
         }
         return $options;
+    }
+
+    private function checkMandatory ($record)
+    {
+        $mandatoryFields = ((new ZohoModule($this->recordType))->fetchMandatory($this->token));
+        $mandatoryMissing = [];
+        foreach ($mandatoryFields as $field) {
+            if (!array_key_exists($field->getName(), $record)) {
+                $mandatoryMissing[] = $field->getName();
+            }
+        }
+        if (count($mandatoryMissing) > 0){
+            throw new \Exception(ZohoErrors::$errors['4401'].': '.implode(', ', $mandatoryMissing), '4401');
+        }
+        return true;
     }
 
 }

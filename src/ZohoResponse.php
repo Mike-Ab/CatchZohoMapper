@@ -263,14 +263,15 @@ class ZohoResponse
                         $response['recordDetails'][$details['val']] = $details['content'];
                     });
             }
-        else {
-            foreach ($responseRecordDetails as $index => $record){
-                array_walk($record['FL'],
-                    function ($details) use (&$response, $index) {
-                        $response['recordDetails'][$index][$details['val']] = $details['content'];
-                    });
+            else {
+                foreach ($responseRecordDetails as $index => $record){
+                    array_walk($record['FL'],
+                        function ($details) use (&$response, $index) {
+                            $response['recordDetails'][$index][$details['val']] = $details['content'];
+                        }
+                    );
+                }
             }
-        }
         }else {
             // multiple update record result
             if (isset($response['response']['result']['row'])) {

@@ -26,6 +26,11 @@ class ZohoModule
      */
     private $fields = [];
 
+    /**
+     * @var array
+     */
+    private $mandatory = [];
+
     public function __construct($moduleName)
     {
         $this->moduleName = $moduleName;
@@ -51,6 +56,19 @@ class ZohoModule
     {
         $this->sections[] = $section;
         return $this;
+    }
+
+    public function getMandatory()
+    {
+        return $this->mandatory;
+    }
+
+    public function fetchMandatory($authToken)
+    {
+        return (new ZohoMapper($authToken, $this->moduleName))
+            ->getFields(true)
+            ->getModule()
+            ->getFields();
     }
 
 

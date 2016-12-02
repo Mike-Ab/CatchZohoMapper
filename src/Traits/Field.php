@@ -5,7 +5,7 @@ use CatchZohoMapper\ZohoSection;
 
 trait Field
 {
-    private $module;
+    private  $module;
     private  $section = null;
     private  $Required;
     private  $label;
