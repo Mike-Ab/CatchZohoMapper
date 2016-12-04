@@ -478,4 +478,12 @@ class ZohoOperationParams
         return self::$scope;
     }
 
+    /**
+     * @return int
+     */
+    public static function getVersion()
+    {
+        return self::$version;
+    }
+
 }

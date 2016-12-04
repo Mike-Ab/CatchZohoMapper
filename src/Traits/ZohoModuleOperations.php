@@ -18,7 +18,7 @@ trait ZohoModuleOperations
      * @param bool $checkMandatory
      * @return ZohoResponse
      */
-    public function insertRecords($record, $opts = false, $checkMandatory = false)
+    public function insertRecords(array $record, $opts = false, $checkMandatory = false)
     {
         if ($checkMandatory) {
             $this->checkMandatory($record);
@@ -30,8 +30,10 @@ trait ZohoModuleOperations
         }
         $options = (new ZohoOperationParams($this->token, $this->recordType))
             ->setXmlData(Zoho::generateXML($record, $this->recordType));
-        if (count($record) > 1){
-            $options->setVersion(4);
+        if (array_key_exists(0,$record)) {
+            if (is_array($record[0])) {
+                $options->setVersion(4);
+            }
         }
         if ($opts) {
             $options = $this->setOpts($options, $opts);
@@ -41,9 +43,7 @@ trait ZohoModuleOperations
                 }
             }
         }
-        return ((new ZohoResponse)->handleResponse(
-            Zoho::execute($options))
-        );
+        return Zoho::execute($options);
     }
 
     /**
@@ -91,9 +91,7 @@ trait ZohoModuleOperations
         if ($opts) {
             $options = $this->setOpts($options, $opts);
         }
-        return ((new ZohoResponse)->handleResponse(
-            Zoho::execute($options))
-        );
+        return Zoho::execute($options);
     }
 
     public function getRecords($opts = false)
@@ -104,9 +102,7 @@ trait ZohoModuleOperations
         if ($opts) {
             $options = $this->setOpts($options, $opts);
         }
-        return ((new ZohoResponse)->handleResponse(
-            Zoho::execute($options), $this->recordType)
-        );
+        return Zoho::execute($options);
     }
 
     public function getMyRecords($opts = false)
@@ -116,9 +112,7 @@ trait ZohoModuleOperations
         if ($opts) {
             $options = $this->setOpts($options, $opts);
         }
-        return ((new ZohoResponse)->handleResponse(
-            Zoho::execute($options), $this->recordType)
-        );
+        return Zoho::execute($options);
     }
 
     /**
@@ -138,9 +132,7 @@ trait ZohoModuleOperations
         if ($opts) {
             $options = $this->setOpts($options, $opts);
         }
-        return ((new ZohoResponse)->handleResponse(
-            Zoho::execute($options), $this->recordType)
-        );
+        return Zoho::execute($options);
     }
 
     public function getRecordById($recordIds, $includeNull = false)
@@ -155,9 +147,7 @@ trait ZohoModuleOperations
         if ($includeNull) {
             $options->setNewFormat(1);
         }
-        return ((new ZohoResponse)->handleResponse(
-            Zoho::execute($options), $this->recordType)
-        );
+        return Zoho::execute($options);
     }
 
     /**
@@ -249,9 +239,19 @@ trait ZohoModuleOperations
     {
         $mandatoryFields = ((new ZohoModule($this->recordType))->fetchMandatory($this->token));
         $mandatoryMissing = [];
-        foreach ($mandatoryFields as $field) {
-            if (!array_key_exists($field->getName(), $record)) {
-                $mandatoryMissing[] = $field->getName();
+        if (is_array($record) && count($record) > 1){
+            foreach ($record as $innerRecord){
+                foreach ($mandatoryFields as $field) {
+                    if (!array_key_exists($field->getName(), $innerRecord)) {
+                        $mandatoryMissing[] = $field->getName();
+                    }
+                }
+            }
+        }else {
+            foreach ($mandatoryFields as $field) {
+                if (!array_key_exists($field->getName(), $record)) {
+                    $mandatoryMissing[] = $field->getName();
+                }
             }
         }
         if (count($mandatoryMissing) > 0){
@@ -259,5 +259,4 @@ trait ZohoModuleOperations
         }
         return true;
     }
-
 }

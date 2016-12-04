@@ -9,16 +9,25 @@
 namespace CatchZohoMapper;
 
 
+use GuzzleHttp\Pool;
+
 class ZohoResponse
 {
+    private $apiVersion = 2;
     /**
      * @var $response
      */
     protected $response;
     /**
+     * What did zoho say
+     *
+     * @var $responseObject
+     */
+    protected $responseObject;
+    /**
      * @var $result
      */
-    protected static $result;
+    protected static $result = true;
     /**
      * @var $message
      */
@@ -31,6 +40,10 @@ class ZohoResponse
      * @var $record
      */
     protected $recordDetails;
+    /**
+     * @var $record
+     */
+    protected $recordType;
 
     /**
      * @var null
@@ -38,9 +51,17 @@ class ZohoResponse
     protected $module = null;
 
 
-    public function __construct($responseObject = null)
+    public function __construct($responseObject = null, $recordType = false, $responseVersion = false)
     {
-
+        if (isset($responseObject)){
+            $this->responseObject =$responseObject;
+        }
+        if ($recordType){
+            $this->recordType = $recordType;
+        }
+        if ($responseVersion){
+            $this->apiVersion = $responseVersion;
+        }
     }
 
     public function getRecordDetails()
@@ -76,17 +97,25 @@ class ZohoResponse
         return $this->module;
     }
 
-    public function handleResponse($responseObject, $recordType = false)
+    public function handleResponse($responseObject = false, $recordType = false)
     {
-        $operation = debug_backtrace()[1]['function'];
+        if (!$responseObject) {
+            $responseObject = $this->responseObject;
+        }
+        if (!$recordType) {
+            $recordType = $this->recordType;
+        }
+        $operation = debug_backtrace()[2]['function'];
         $response = (json_decode($responseObject, true));
         self::checkForErrors($response);
         switch ($operation) {
             case 'insertRecords':
-                return $this->populateResponse($this->formResponseArray($response));
+                return $this->populateResponse( $this->apiVersion == 4 ?
+                    $this->formV4ResponseArray($response) : $this->formResponseArray($response));
                 break;
             case 'updateRecords':
-                return $this->populateResponse($this->formUpdateResponseArray($response));
+                return $this->populateResponse($this->apiVersion == 4 ?
+                    $this->formV4ResponseArray($response) : $this->formResponseArray($response));
                 break;
             case 'uploadFile':
                 return $this->populateResponse(
@@ -225,19 +254,26 @@ class ZohoResponse
 
     }
 
+    /**
+     * General operation response for version 1 and 2  (insert, update, delete ... etc)
+     * Not suitable for Get Records of any kind
+     *
+     * @param array $response
+     * @return array
+     */
     private function formResponseArray(array $response)
     {
         $response['message'] = $response['response']['result']['message'];
         $response['uri'] = $response['response']['uri'];
         $responseRecordDetails = $response['response']['result']['recorddetail'];
         if (isset($responseRecordDetails['FL'])) {
-//            echo 'SINGLE ';
+            //SINGLE
             array_walk($responseRecordDetails['FL'],
                 function ($details) use (&$response) {
                     $response['recordDetails'][$details['val']] = $details['content'];
                 });
         }else {
-//            echo 'Multiple ';
+            //Multiple
             foreach ($responseRecordDetails as $index => $record){
                 array_walk($record['FL'],
                     function ($details) use (&$response, $index) {
@@ -250,59 +286,30 @@ class ZohoResponse
         return $response;
     }
 
-
-    private function formUpdateResponseArray(array $response)
+    /**
+     * This is the Version 4 parse of the insert response
+     *
+     * @param array $response
+     * @return array
+     * @throws \Exception
+     */
+    private function formV4ResponseArray(array $response)
     {
-        $responseMessage = 'All records updated successfully';
+        $responseMessage = 'Request was successful';
         $response['uri'] = $response['response']['uri'];
-        if (isset($response['response']['result']['recorddetail'])) {
-            $responseRecordDetails = $response['response']['result']['recorddetail'];
-            if (isset($responseRecordDetails['FL'])) {
-                array_walk($responseRecordDetails['FL'],
-                    function ($details) use (&$response) {
-                        $response['recordDetails'][$details['val']] = $details['content'];
-                    });
-            }
-            else {
-                foreach ($responseRecordDetails as $index => $record){
-                    array_walk($record['FL'],
-                        function ($details) use (&$response, $index) {
-                            $response['recordDetails'][$index][$details['val']] = $details['content'];
-                        }
-                    );
+        if (isset($response['response']['result']['row'])) {
+            if (isset($response['response']['result']['row']['no'])){
+                $response = $this->parseV4Row($response, $response['response']['result']['row']);
+            }else {
+                foreach ($response['response']['result']['row'] as $row) {
+                    $response = $this->parseV4Row($response, $row);
                 }
             }
         }else {
-            // multiple update record result
-            if (isset($response['response']['result']['row'])) {
-                $errorTest = true;
-                foreach ($response['response']['result']['row'] as $row){
-                    if (isset($row['error'])){
-                        $response['RecordDetails'][$row['no']] = [
-                            'result' => 'error',
-                            'code' => $row['error']['code'],
-                            'details' => $row['error']['details']
-                        ];
-                        $errorTest = false;
-                        $responseMessage = 'There has been errors while updating';
-                    }else {
-                        $response['recordDetails'][$row['no']] = [
-                            'result' => 'success',
-                            'code' => $row['success']['code'],
-                            'message' => ZohoErrors::$checkDuplicateCodes[$row['success']['code']],
-                        ];
-                        array_walk($row['success']['details']['FL'],
-                            function ($details) use (&$response, $row) {
-                                $response['recordDetails'][$row['no']]['details'][$details['val']] = $details['content'];
-                            });
-                    }
-                }
-                self::$result = $errorTest;
-
-            }else {
-                throw new \Exception('There has been errors in your request. Check ZohoResponse->success() for details', '8001');
-            }
-
+            throw new \Exception('There has been errors in your request. Check ZohoResponse->success() for details', '8001');
+        }
+        if (!self::$result) {
+            $responseMessage = 'There has been errors processing your request';
         }
         $response['message'] = isset($response['response']['result']['message']) ?
             $response['response']['result']['message'] : $responseMessage;
@@ -311,6 +318,84 @@ class ZohoResponse
         return $response;
     }
 
+//    private function formUpdateResponseArray(array $response)
+//    {
+//        $responseMessage = 'All records updated successfully';
+//        $response['uri'] = $response['response']['uri'];
+//        if (isset($response['response']['result']['recorddetail'])) {
+//            $responseRecordDetails = $response['response']['result']['recorddetail'];
+//            if (isset($responseRecordDetails['FL'])) {
+//                array_walk($responseRecordDetails['FL'],
+//                    function ($details) use (&$response) {
+//                        $response['recordDetails'][$details['val']] = $details['content'];
+//                    });
+//            }
+//            else {
+//                foreach ($responseRecordDetails as $index => $record){
+//                    array_walk($record['FL'],
+//                        function ($details) use (&$response, $index) {
+//                            $response['recordDetails'][$index][$details['val']] = $details['content'];
+//                        }
+//                    );
+//                }
+//            }
+//        }else {
+//            // multiple update record result
+//            if (isset($response['response']['result']['row'])) {
+//                foreach ($response['response']['result']['row'] as $row){
+//                    $response = $this->parseV4Row($response, $row);
+//                }
+//                if (!self::$result) {
+//                    $responseMessage = 'There has been errors while updating';
+//                }
+//            }else {
+//                throw new \Exception('There has been errors in your request. Check ZohoResponse->success() for details', '8001');
+//            }
+//
+//        }
+//        $response['message'] = isset($response['response']['result']['message']) ?
+//            $response['response']['result']['message'] : $responseMessage;
+//        unset($response['response']);
+//        $response['response'] = $response;
+//        return $response;
+//    }
+    /**
+     * Api V4 response parses for single and multiple records
+     *
+     * @param $response
+     * @param $row
+     * @return mixed
+     */
+    private function parseV4Row ($response, $row)
+    {
+        if (isset($row['error'])){
+            $response['recordDetails'][$row['no']] = [
+                'result' => 'error',
+                'code' => $row['error']['code'],
+                'details' => $row['error']['details']
+            ];
+            self::$result = false;
+        }else {
+            $response['recordDetails'][$row['no']] = [
+                'result' => 'success',
+                'code' => $row['success']['code'],
+                'message' => ZohoErrors::$checkDuplicateCodes[$row['success']['code']],
+            ];
+            array_walk($row['success']['details']['FL'],
+                function ($details) use (&$response, $row) {
+                    $response['recordDetails'][$row['no']]['details'][$details['val']] = $details['content'];
+                });
+        }
+        return $response;
+    }
+
+    /**
+     * Check general errors in the response
+     * Mostly built around v2 api responses
+     *
+     * @param $response
+     * @throws \Exception
+     */
     private static function checkForErrors($response)
     {
         if (isset($response['response']['error']) || isset ($response['response']['nodata'])) {

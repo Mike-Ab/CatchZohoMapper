@@ -41,9 +41,7 @@ class ZohoMapper
     {
         $options = (new ZohoOperationParams($this->token, $this->recordType))
             ->setUserType($type);
-        return ((new ZohoResponse)->handleResponse(
-            Zoho::execute($options))
-        );
+        return Zoho::execute($options);
     }
 
     public function getModules($apiOnly = false)
@@ -52,9 +50,7 @@ class ZohoMapper
         if ($apiOnly) {
             $options->setUserType('api');
         }
-        return ((new ZohoResponse)->handleResponse(
-            Zoho::execute($options))
-        );
+        return Zoho::execute($options);
     }
 
     public function uploadFile($recordId, $filePath , $attachmentUrl = false)
@@ -69,12 +65,10 @@ class ZohoMapper
             ->setVersion(null);
         if (!$attachmentUrl){
             $options->setContent($filePath);
-            return (new ZohoResponse)->handleResponse(
-                Zoho::sendFile($options));
+            return Zoho::sendFile($options);
         }else {
             $options->setAttachmentUrl($attachmentUrl);
-            return (new ZohoResponse)->handleResponse(
-                Zoho::execute($options));
+            return Zoho::execute($options);
         }
     }
 
@@ -98,8 +92,7 @@ class ZohoMapper
             $options = $this->setOpts($options, $opts);
         }
         $options->setCriteria(Zoho::formSearchCriteria($searchCriteria));
-        return (new ZohoResponse)->handleResponse(
-            Zoho::execute($options), $this->recordType);
+        return Zoho::execute($options);
     }
 
 }

@@ -124,7 +124,8 @@ class ZohoServiceProvider
             $attempt = $http->request('POST', self::generateURL($params::getRecordType()), [
                 'form_params' => $params::getParams()
             ]);
-            return ($attempt->getBody());
+            return (new ZohoResponse($attempt->getBody(), $params::getRecordType(), $params::getVersion()))
+                ->handleResponse();
         } catch (ClientException $e) {
             throw new \Exception($e->getMessage(), $e->getCode());
         }
@@ -155,7 +156,8 @@ class ZohoServiceProvider
                     ]
                 ]
             ]);
-            return ($attempt->getBody());
+            return (new ZohoResponse($attempt->getBody(), $params::getRecordType(), $params::getVersion()))
+                ->handleResponse();
         } catch (ClientException $e) {
             throw new \Exception($e->getMessage(), $e->getCode());
         }
