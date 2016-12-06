@@ -1,6 +1,6 @@
 {
     "name": "catch/zoho-mapper",
-    "description": "A simple zoho API wrapping class customised for CatchSolutions clients",
+    "description": "A simple ZOHO CRM API wrapper.",
     "require": {
         "php": ">=5.5.0",
         "guzzlehttp/guzzle": "~6.0"

@@ -7,7 +7,7 @@ use CatchZohoMapper\ZohoOperationParams;
 use CatchZohoMapper\ZohoResponse;
 use CatchZohoMapper\ZohoServiceProvider as Zoho;
 
-trait ZohoModuleOperations
+trait ZohoRecordOperations
 {
     /**
      * Insert record or an array of records
@@ -18,7 +18,7 @@ trait ZohoModuleOperations
      * @param bool $checkMandatory
      * @return ZohoResponse
      */
-    public function insertRecords(array $record, $opts = false, $checkMandatory = false)
+    public function add(array $record, $opts = false, $checkMandatory = false)
     {
         if ($checkMandatory) {
             $this->checkMandatory($record);
@@ -57,7 +57,7 @@ trait ZohoModuleOperations
      * @return ZohoResponse
      * @throws \Exception
      */
-    public function updateRecords($recordIds, array $updates = [], $opts = false)
+    public function save($recordIds, array $updates = [], $opts = false)
     {
         $options = (new ZohoOperationParams($this->token, $this->recordType))
             ->setNewFormat(null);
@@ -100,61 +100,11 @@ trait ZohoModuleOperations
      * @param $recordId
      * @return ZohoResponse
      */
-    public function deleteRecords($recordId)
+    public function delete($recordId)
     {
         $options = (new ZohoOperationParams($this->token, $this->recordType))
             ->setWfTrigger(null)
             ->setId($recordId);
-        return Zoho::execute($options);
-    }
-
-    /**
-     * Delete a single Record
-     *
-     * @param $recordId
-     * @return ZohoResponse
-     */
-    public function deleteFile($recordId)
-    {
-        $options = (new ZohoOperationParams($this->token, $this->recordType))
-            ->setWfTrigger(null)
-            ->setId($recordId);
-        return Zoho::execute($options);
-    }
-
-    /**
-     * Fetch records from ZOHO CRM.
-     * Available opts : 'newFormat|includeNull', 'selectColumns', 'fromIndex', 'toIndex', 'sortColumnString',
-     * 'sortOrderString', 'lastModifiedTime', 'version : only if you know what you are doing ... leave default value'
-     *
-     * @param bool|array $opts
-     * @return ZohoResponse
-     */
-    public function getRecords($opts = false)
-    {
-        $options = (new ZohoOperationParams($this->token, $this->recordType))
-            ->setWfTrigger(null);
-        if ($opts) {
-            $options = $this->setOpts($options, $opts);
-        }
-        return Zoho::execute($options);
-    }
-
-    /**
-     * Fetch AuthToken's Owned records from ZOHO CRM.
-     * Available opts : 'newFormat|includeNull', 'selectColumns', 'fromIndex', 'toIndex', 'sortColumnString',
-     * 'sortOrderString', 'lastModifiedTime', 'version : only if you know what you are doing ... leave default value'
-     *
-     * @param bool|array $opts
-     * @return ZohoResponse
-     */
-    public function getMyRecords($opts = false)
-    {
-        $options = (new ZohoOperationParams($this->token, $this->recordType))
-            ->setWfTrigger(null);
-        if ($opts) {
-            $options = $this->setOpts($options, $opts);
-        }
         return Zoho::execute($options);
     }
 
@@ -178,7 +128,7 @@ trait ZohoModuleOperations
         return Zoho::execute($options);
     }
 
-    public function getRecordById($recordIds, $includeNull = false)
+    public function fetch($recordIds, $includeNull = false)
     {
         $options = (new ZohoOperationParams($this->token, $this->recordType))
             ->setWfTrigger(null);

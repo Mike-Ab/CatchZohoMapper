@@ -138,19 +138,6 @@ class ZohoOperationParams
      */
     protected static $parentModule = null;
 
-    public function setIdList (array $idList)
-    {
-        if (count($idList) > 1) {
-            if (isset (self::$id)) {
-                self::$id = null;
-            }
-            self::$idlist = implode(';', $idList);
-        }else {
-            self::$id = $idList[0];
-        }
-        return $this;
-    }
-
     /**
      * ZohoOperationParams constructor.
      *
@@ -165,6 +152,23 @@ class ZohoOperationParams
         if ($recordType) {
             $this->setRecordType($recordType);
         }
+    }
+
+    /**
+     * @param array $idList
+     * @return $this
+     */
+    public function setIdList (array $idList)
+    {
+        if (count($idList) > 1) {
+            if (isset (self::$id)) {
+                self::$id = null;
+            }
+            self::$idlist = implode(';', $idList);
+        }else {
+            self::$id = $idList[0];
+        }
+        return $this;
     }
 
     /**
@@ -485,5 +489,4 @@ class ZohoOperationParams
     {
         return self::$version;
     }
-
 }

@@ -17,6 +17,7 @@ trait Field
     private  $enabled = null;
     private  $lookupModule = null;
     private  $valueOptions = null;
+    protected $value;
 
     /**
      * @param $section
@@ -115,6 +116,16 @@ trait Field
     public function setType($type)
     {
         $this->type = $type;
+        return $this;
+    }
+
+    /**
+     * @param mixed $value
+     * @return $this
+     */
+    public function setValue($value)
+    {
+        $this->value = $value;
         return $this;
     }
 
@@ -224,6 +235,14 @@ trait Field
     public function getType()
     {
         return $this->type;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getValue()
+    {
+        return $this->value;
     }
 
     /**

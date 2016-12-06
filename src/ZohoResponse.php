@@ -121,6 +121,14 @@ class ZohoResponse
                 return $this->populateResponse(
                     $this->formResponseArray($response));
                 break;
+            case 'deleteRecords':
+                return $this->populateResponse(
+                    $this->formDeleteResponseArray($response));
+                break;
+            case 'deleteFile':
+                return $this->populateResponse(
+                    $this->formDeleteFileResponseArray($response));
+                break;
             case 'getRecordById':
                 return $this->populateResponse(
                     $this->formGetRecordsResponseArray($response, $recordType));
@@ -281,6 +289,37 @@ class ZohoResponse
                     });
             }
         }
+        unset($response['response']);
+        $response['response'] = $response;
+        return $response;
+    }
+
+    /**
+     * Delete Record operations response
+     *
+     * @param array $response
+     * @return array
+     */
+    private function formDeleteResponseArray(array $response)
+    {
+        $response['message'] = $response['response']['result']['message'];
+        $response['uri'] = $response['response']['uri'];
+        unset($response['response']);
+        $response['response'] = $response;
+        return $response;
+    }
+
+    /**
+     * Delete Attachment operations response
+     * Errors will be caught with checkForErrors()
+     *
+     * @param array $response
+     * @return array
+     */
+    private function formDeleteFileResponseArray(array $response)
+    {
+        $response['message'] = $response['response']['success']['message'];
+        $response['uri'] = $response['response']['uri'];
         unset($response['response']);
         $response['response'] = $response;
         return $response;
