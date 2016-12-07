@@ -141,6 +141,10 @@ class ZohoResponse
                 return $this->populateResponse(
                     $this->formGetRecordsResponseArray($response, $recordType));
                 break;
+            case 'getRelatedRecords':
+                return $this->populateResponse(
+                    $this->formGetRecordsResponseArray($response, $recordType));
+                break;
             case 'searchRecords':
                 return $this->populateResponse(
                     $this->formGetRecordsResponseArray($response, $recordType));
@@ -201,7 +205,7 @@ class ZohoResponse
             // single Record
             foreach ($response['response']['result'][$recordType] as $row) {
                 array_walk($row['FL'], function ($details) use (&$response, $row) {
-                    $response['recordDetails'][$row['no']][$details['val']] = $details['content'];
+                    $response['recordDetails'][$details['val']] = $details['content'];
                 });
             }
         }else {

@@ -9,8 +9,6 @@
 namespace CatchZohoMapper;
 
 
-use GuzzleHttp\Exception\GuzzleException;
-
 class ZohoOperationParams
 {
     /**
@@ -152,6 +150,26 @@ class ZohoOperationParams
         if ($recordType) {
             $this->setRecordType($recordType);
         }
+    }
+
+    /**
+     * Reset the instance
+     */
+    public static function reset()
+    {
+        $persistant = [
+            'recordType',
+            'authtoken',
+            'scope'
+            ];
+
+        foreach (get_class_vars(self::class) as $name => $value){
+            if (!in_array($name, $persistant)) {
+                self::$$name = null;
+            }
+        }
+        self::$version = 2;
+        self::$newFormat = 1;
     }
 
     /**

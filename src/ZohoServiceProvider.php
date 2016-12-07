@@ -11,6 +11,16 @@ use GuzzleHttp\Exception\ClientException;
  */
 class ZohoServiceProvider 
 {
+    private static $noApiFields = [
+        'SMCREATORID',
+        'Created By',
+        'MODIFIEDBY',
+        'Modified By',
+        'Created Time',
+        'Modified Time',
+        'Last Activity Time',
+        'LEADID',
+    ];
     /**
      * Generate the API endpoint needed for the certain API function
      * 
@@ -124,8 +134,10 @@ class ZohoServiceProvider
             $attempt = $http->request('POST', self::generateURL($params::getRecordType()), [
                 'form_params' => $params::getParams()
             ]);
-            return (new ZohoResponse($attempt->getBody(), $params::getRecordType(), $params::getVersion()))
+            $return = (new ZohoResponse($attempt->getBody(), $params::getRecordType(), $params::getVersion()))
                 ->handleResponse();
+            $params::reset();
+            return $return;
         } catch (ClientException $e) {
             throw new \Exception($e->getMessage(), $e->getCode());
         }
@@ -156,10 +168,22 @@ class ZohoServiceProvider
                     ]
                 ]
             ]);
-            return (new ZohoResponse($attempt->getBody(), $params::getRecordType(), $params::getVersion()))
+            $return = (new ZohoResponse($attempt->getBody(), $params::getRecordType(), $params::getVersion()))
                 ->handleResponse();
+            $params::reset();
+            return $return;
         } catch (ClientException $e) {
             throw new \Exception($e->getMessage(), $e->getCode());
         }
+    }
+
+    public static function cleanRecordForUpdate(array $record)
+    {
+       foreach ($record as $key => $value){
+           if (array_key_exists($key, self::$noApiFields)){
+               unset($record[$key]);
+           }
+       }
+       return $record;
     }
 }

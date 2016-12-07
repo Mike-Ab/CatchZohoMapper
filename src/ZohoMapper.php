@@ -1,14 +1,15 @@
 <?php
 namespace CatchZohoMapper;
 
+use CatchZohoMapper\Interfaces\ZohoModuleInterface;
+use CatchZohoMapper\Traits\FileOperations;
 use CatchZohoMapper\Traits\Singleton;
 use CatchZohoMapper\Traits\ZohoModuleOperations;
 use CatchZohoMapper\ZohoServiceProvider as Zoho;
-use GuzzleHttp\Psr7\Stream;
 
-class ZohoMapper
+class ZohoMapper implements ZohoModuleInterface
 {
-    use ZohoModuleOperations, Singleton;
+    use ZohoModuleOperations, FileOperations, Singleton;
 
     private $token;
     protected $recordType;
@@ -53,36 +54,13 @@ class ZohoMapper
         return Zoho::execute($options);
     }
 
-    public function uploadFile($recordId, $filePath , $attachmentUrl = false)
-    {
-        if (!is_file ($filePath) || !file_exists ($filePath)){
-            throw new \Exception('The file you are attempting to upload is missing');
-        }
-        $options = (new ZohoOperationParams($this->token, $this->recordType))
-            ->setId($recordId)
-            ->setWfTrigger(null)
-            ->setNewFormat(null)
-            ->setVersion(null);
-        if (!$attachmentUrl){
-            $options->setContent($filePath);
-            return Zoho::sendFile($options);
-        }else {
-            $options->setAttachmentUrl($attachmentUrl);
-            return Zoho::execute($options);
-        }
-    }
-
     /**
-     * @param $attachmentId
-     * @return Stream
+     * Search for
+     *
+     * @param array $searchCriteria
+     * @param bool $opts
+     * @return ZohoResponse
      */
-    public function downloadFile($attachmentId)
-    {
-        $options = (new ZohoOperationParams($this->token, $this->recordType))
-            ->setId($attachmentId);
-        return Zoho::execute($options)->getContents();
-    }
-
     public function searchRecords(array $searchCriteria, $opts = false)
     {
         $options = (new ZohoOperationParams($this->token, $this->recordType))

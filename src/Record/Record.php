@@ -1,28 +1,28 @@
 <?php
-namespace CatchZohoMapper\Traits;
+namespace CatchZohoMapper\Record;
 
-use CatchZohoMapper\ZohoField;
 
 trait Record
 {
-    private  $module;
-    private  $parent = null;
-    protected $id;
-    protected $fields = [];
+    private $module;
+    private $parent = null;
+    private $properties = ['id'];
+    public $id;
 
-    public function __construct($id = false)
-    {
-        if ($id){
-            $this->setId($id);
-        }
-    }
-
+    /**
+     * Set a value for a property or create the property if it doesn't exist
+     *
+     * @param $key
+     * @param $value
+     * @return $this
+     */
     public function set($key, $value)
     {
         if (isset($this->{$key})){
             $this->{$key} = $value;
         }else {
             $this->createProperty($key, $value);
+            array_push($this->properties, $key);
         }
         return $this;
     }
@@ -39,39 +39,33 @@ trait Record
     }
 
     /**
-     * @param ZohoField $field
-     * @return $this
-     */
-    public function setFields(ZohoField $field)
-    {
-        $this->fields[] = $field;
-        $this->createProperty($field->getName(), $field->getValue());
-        return $this;
-    }
-
-
-    /**
      * @param mixed $id
+     * @return $this
      */
     public function setId($id)
     {
         $this->id = $id;
+        return $this;
     }
 
     /**
      * @param mixed $module
+     * @return $this
      */
     public function setModule($module)
     {
         $this->module = $module;
+        return $this;
     }
 
     /**
      * @param null $parent
+     * @return $this
      */
     public function setParent($parent)
     {
         $this->parent = $parent;
+        return $this;
     }
 
     /**
@@ -103,15 +97,45 @@ trait Record
      *
      * @return array
      */
-    public function getRecordInfo()
+    public function toArray()
     {
         $params = [];
-        foreach (get_class_vars(self::class) as $name => $value){
-            if (isset($this->$name)) {
-                $params[$name] = $this->$name;
+        foreach ( $this->properties as $property){
+            if (isset($this->{$property})) {
+                $params[$property] = $this->get($property);
             }
         }
         return $params;
+    }
+
+    /**
+     * Check if a key or property exists
+     *
+     * @param $key
+     * @return bool
+     */
+    public function has($key)
+    {
+        return isset($this->{$key});
+    }
+
+    public function hasValue($key)
+    {
+        if ($this->has($key)){
+            return !empty($this->get($key));
+        }
+    }
+
+    /**
+     * @param array $values
+     * @return $this
+     */
+    protected function populate(array $values)
+    {
+        foreach ($values as $key => $value){
+            $this->set($key, $value);
+        }
+        return $this;
     }
 
 

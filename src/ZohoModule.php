@@ -71,6 +71,15 @@ class ZohoModule
             ->getFields();
     }
 
-
+    public function describe()
+    {
+        $description = [];
+        foreach ($this->sections as $section){
+            foreach ($section->getFields() as $field){
+                $description[$section->getLabel()][] = $field;
+            }
+        }
+        return $description;
+    }
 
 }

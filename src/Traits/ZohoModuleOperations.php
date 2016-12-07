@@ -14,7 +14,7 @@ trait ZohoModuleOperations
      * Available opts : 'newFormat|includeNull', 'wfTrigger', 'duplicateCheck', 'isApproval', 'version', 'checkMandatory'
      *
      * @param $record
-     * @param bool $opts
+     * @param bool|array $opts
      * @param bool $checkMandatory
      * @return ZohoResponse
      */
@@ -53,7 +53,7 @@ trait ZohoModuleOperations
      *
      * @param $recordIds
      * @param array $updates
-     * @param bool $opts
+     * @param bool|array $opts
      * @return ZohoResponse
      * @throws \Exception
      */
@@ -159,12 +159,12 @@ trait ZohoModuleOperations
     }
 
     /**
-     * Get the instantiated module type related to the parent type defined as a param
+     * Get the instantiated module type related to the parent type defined as a @param $parentModule
      * Available opts : 'newFormat|includeNull', 'fromIndex', 'toIndex'
      *
      * @param $parentModule
      * @param $parentId
-     * @param bool $opts
+     * @param bool|array $opts
      * @return ZohoResponse
      */
     public function getRelatedRecords($parentModule, $parentId, $opts = false)
@@ -178,6 +178,13 @@ trait ZohoModuleOperations
         return Zoho::execute($options);
     }
 
+    /**
+     * Get the record(s) from Zoho
+     *
+     * @param string|array $recordIds
+     * @param bool $includeNull
+     * @return ZohoResponse
+     */
     public function getRecordById($recordIds, $includeNull = false)
     {
         $options = (new ZohoOperationParams($this->token, $this->recordType))
@@ -207,8 +214,7 @@ trait ZohoModuleOperations
         if ($mandatory) {
             $options->setType(2);
         }
-        return (new ZohoResponse)->handleResponse(
-            Zoho::execute($options), $this->recordType);
+        return Zoho::execute($options);
     }
 
     private function setSelectColumns(ZohoOperationParams $params, $selectColumns)
