@@ -37,6 +37,8 @@ trait FileOperations
     }
 
     /**
+     * Returns the binary content of the file
+     *
      * @param $attachmentId
      * @return Stream
      */

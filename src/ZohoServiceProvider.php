@@ -164,7 +164,6 @@ class ZohoServiceProvider
     public static function sendFile(ZohoOperationParams $params)
     {
         try {
-            var_dump($params::getContent());
             $http = new Client(['verify' => false]);
             $attempt = $http->request('POST', self::generateURL($params::getRecordType()), [
                 'multipart' => [

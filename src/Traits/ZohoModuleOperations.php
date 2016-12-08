@@ -1,10 +1,10 @@
 <?php
 namespace CatchZohoMapper\Traits;
 
+use CatchZohoMapper\Module\ZohoModule;
+use CatchZohoMapper\Response\ZohoResponse;
 use CatchZohoMapper\ZohoErrors;
-use CatchZohoMapper\ZohoModule;
 use CatchZohoMapper\ZohoOperationParams;
-use CatchZohoMapper\ZohoResponse;
 use CatchZohoMapper\ZohoServiceProvider as Zoho;
 
 trait ZohoModuleOperations
