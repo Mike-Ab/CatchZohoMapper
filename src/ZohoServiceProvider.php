@@ -1,13 +1,14 @@
 <?php
 
 namespace CatchZohoMapper;
+use CatchZohoMapper\Response\ZohoResponse;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 
 /**
- * Description of ZohoServiceProvider
+ * Static functions supporting the mapper functions
  *
- * @author mohammada
+ * @author Mike-ab
  */
 class ZohoServiceProvider 
 {
@@ -30,13 +31,19 @@ class ZohoServiceProvider
      */
     public static function generateURL($module, $responseType = 'json')
     {
-        if (debug_backtrace()[2]['function'] == "getModules") {
-            $module = 'Info';
+        if (isset(debug_backtrace()[3]['function']) && debug_backtrace()[3]['function'] != 'attachFile') {
+            $index = 3;
+            if (debug_backtrace()[3]['function'] == "getModules") {
+                $module = 'Info';
+            }
+        }else {
+            // the call has been made from request itself
+            $index = 2;
         }
         return 'https://crm.zoho.com/crm/private/'
             .$responseType.'/'
             .$module.'/'
-            .debug_backtrace()[2]['function'];
+            .debug_backtrace()[$index]['function'];
     }
     
     /**
@@ -103,7 +110,7 @@ class ZohoServiceProvider
                 $tempArray[] = '('.$key.':'.$option.')';
             }
         }
-        return (implode('OR',$tempArray));
+        return ('('.implode('OR',$tempArray).')');
     }
 
     private static function formAndCriteria(array $array)
@@ -127,17 +134,28 @@ class ZohoServiceProvider
         return '('.implode('AND', $newArray).')';
     }
 
-    public static function execute(ZohoOperationParams $params, $method = 'POST')
+    public static function execute(ZohoOperationParams $params)
+    {
+        try {
+            return (new ZohoResponse(
+                self::request($params),
+                $params::getRecordType(),
+                $params::getVersion()
+            ))->handleResponse();
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage(), $e->getCode());
+        }
+    }
+
+    public static function request(ZohoOperationParams $params)
     {
         try {
             $http = new Client(['verify' => false]);
             $attempt = $http->request('POST', self::generateURL($params::getRecordType()), [
                 'form_params' => $params::getParams()
             ]);
-            $return = (new ZohoResponse($attempt->getBody(), $params::getRecordType(), $params::getVersion()))
-                ->handleResponse();
             $params::reset();
-            return $return;
+            return $attempt->getBody();
         } catch (ClientException $e) {
             throw new \Exception($e->getMessage(), $e->getCode());
         }
@@ -146,6 +164,7 @@ class ZohoServiceProvider
     public static function sendFile(ZohoOperationParams $params)
     {
         try {
+            var_dump($params::getContent());
             $http = new Client(['verify' => false]);
             $attempt = $http->request('POST', self::generateURL($params::getRecordType()), [
                 'multipart' => [

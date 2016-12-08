@@ -6,11 +6,9 @@
  * Time: 10:56 AM
  */
 
-namespace CatchZohoMapper;
+namespace CatchZohoMapper\Module;
 
-use CatchZohoMapper\ZohoField;
-use CatchZohoMapper\ZohoSection;
-
+use CatchZohoMapper\ZohoMapper;
 
 class ZohoModule
 {

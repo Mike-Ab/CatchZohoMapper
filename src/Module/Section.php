@@ -1,7 +1,6 @@
 <?php
-namespace CatchZohoMapper\Traits;
-
-use CatchZohoMapper\ZohoField;
+namespace CatchZohoMapper\Module;
+;
 
 trait Section
 {

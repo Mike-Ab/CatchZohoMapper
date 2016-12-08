@@ -6,9 +6,8 @@
  * Time: 12:09 PM
  */
 
-namespace CatchZohoMapper;
+namespace CatchZohoMapper\Module;
 
-use \CatchZohoMapper\Traits\Field;
 
 class ZohoField
 {

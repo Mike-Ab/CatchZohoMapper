@@ -44,6 +44,6 @@ trait FileOperations
     {
         $options = (new ZohoOperationParams($this->token, $this->recordType))
             ->setId($attachmentId);
-        return Zoho::execute($options)->getContents();
+        return Zoho::request($options)->getContents();
     }
 }

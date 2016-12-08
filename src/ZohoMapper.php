@@ -2,6 +2,7 @@
 namespace CatchZohoMapper;
 
 use CatchZohoMapper\Interfaces\ZohoModuleInterface;
+use CatchZohoMapper\Response\ZohoResponse;
 use CatchZohoMapper\Traits\FileOperations;
 use CatchZohoMapper\Traits\Singleton;
 use CatchZohoMapper\Traits\ZohoModuleOperations;
@@ -70,6 +71,7 @@ class ZohoMapper implements ZohoModuleInterface
             $options = $this->setOpts($options, $opts);
         }
         $options->setCriteria(Zoho::formSearchCriteria($searchCriteria));
+        var_dump(Zoho::formSearchCriteria($searchCriteria));
         return Zoho::execute($options);
     }
 

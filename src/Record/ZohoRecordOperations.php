@@ -5,7 +5,7 @@ use CatchZohoMapper\Traits\Commons;
 use CatchZohoMapper\Traits\FileOperations;
 use CatchZohoMapper\Traits\ZohoModuleOperations;
 use CatchZohoMapper\ZohoMapper;
-use CatchZohoMapper\ZohoResponse;
+use CatchZohoMapper\Response\ZohoResponse;
 use CatchZohoMapper\ZohoServiceProvider as Zoho;
 
 
