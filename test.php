@@ -21,7 +21,7 @@ $lead = [
 //    foreach($zoho->getFields(false)->getModule()->getFields() as $field){
 //        var_dump($field->getFieldInfo());
 //    }
-var_dump($zoho->uploadFile('696292000041727818', __DIR__.DIRECTORY_SEPARATOR.'resized.jpg' )->getRecordDetails());
+//var_dump($zoho->uploadFile('696292000041727818', __DIR__.DIRECTORY_SEPARATOR.'resized.jpg' )->getRecordDetails());
     $searchOptions = [
         'fromIndex' => 199,
         'toIndex' => 250,
@@ -69,7 +69,7 @@ $searchCriteria = [ // [[1] OR [[2] AND[3]]]
 //$pro = (new \CatchZohoMapper\ZohoServiceProvider);
 //var_dump($pro::formSearchCriteria($searchCriteria));
 //var_dump($zoho->searchRecords($searchCriteria, $searchOptions2)->getRecordDetails());
-//var_dump($zoho->getMyRecords($searchOptions2)->getRecordDetails());
+var_dump($zoho->getMyRecords($searchOptions2)->getRecordDetails());
 //var_dump($zoho->downloadFile('696292000043685003'));
 $updateIds = ['696292000043529806', '696292000023479146', '696292000041727818'];
 $updates = [

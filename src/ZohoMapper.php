@@ -12,9 +12,24 @@ class ZohoMapper implements ZohoModuleInterface
 {
     use ZohoModuleOperations, FileOperations, Singleton;
 
+    /**
+     * @var string
+     */
     private $token;
+
+    /**
+     * @var string
+     */
     protected $recordType;
 
+    /**
+     * ZohoMapper constructor.
+     *
+     * @param string $token
+     * @param string $recordType
+     * @param bool $check Ensures that the recordType is supported by the API
+     * @throws \Exception
+     */
     public function __construct($token, $recordType, $check = false)
     {
         if (!$token) {
@@ -24,8 +39,8 @@ class ZohoMapper implements ZohoModuleInterface
             throw new \Exception('Missing record type.. ex \'Leads\'');
         }
         $this->token = $token;
-        $this->recordType = $recordType;
-        if ($check && $recordType !== 'Info'){
+        $this->recordType = ucwords($recordType);
+        if ($check && ucwords($recordType) !== 'Info'){
             $test = false;
             $modules = $this->getModules()->getRecordDetails();
             array_walk($modules, function ($module) use (&$test, $recordType){
@@ -39,6 +54,13 @@ class ZohoMapper implements ZohoModuleInterface
         }
     }
 
+    /**
+     * Get users of your account
+     * Allowed types : 'AllUsers', 'ActiveUsers', 'DeactiveUsers', 'AdminUsers', 'ActiveConfirmedAdmins'
+     *
+     * @param string $type
+     * @return ZohoResponse
+     */
     public function getUsers($type = 'AllUsers')
     {
         $options = (new ZohoOperationParams($this->token, $this->recordType))
@@ -46,6 +68,12 @@ class ZohoMapper implements ZohoModuleInterface
         return Zoho::execute($options);
     }
 
+    /**
+     * Get a list of the modules defined in your CRM
+     *
+     * @param bool $apiOnly Return a list of the API supported modules only
+     * @return ZohoResponse
+     */
     public function getModules($apiOnly = false)
     {
         $options = (new ZohoOperationParams($this->token, $this->recordType));
@@ -56,7 +84,7 @@ class ZohoMapper implements ZohoModuleInterface
     }
 
     /**
-     * Search for
+     * Search for records
      *
      * @param array $searchCriteria
      * @param bool $opts
