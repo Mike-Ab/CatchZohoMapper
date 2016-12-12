@@ -77,14 +77,14 @@ class ZohoResponseParser
             // single Record
             foreach ($this->response['response']['result'][$this->recordType] as $row) {
                 array_walk($row['FL'], function ($details) use (&$response, $row) {
-                    $response['recordDetails'][$details['val']] = $details['content'];
+                    $response['recordDetails'][$details['val']] = isset($details['content'])? $details['content'] : null;
                 });
             }
         }else {
             // multiple records
             foreach ($response['response']['result'][$this->recordType]['row'] as $record) {
                 array_walk($record['FL'], function ($details) use (&$response, $record) {
-                    $response['recordDetails'][$record['no']][$details['val']] = $details['content'];
+                    $response['recordDetails'][$record['no']][$details['val']] = isset($details['content'])? $details['content'] : null;
                 });
             }
         }

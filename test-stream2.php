@@ -21,6 +21,7 @@ try {
 //        ->insert(['wfTrigger' => true])->getId());
 //    var_dump($record->setId('696292000041727818')->attachFile(__DIR__.DIRECTORY_SEPARATOR.'resized.jpg')->fetch()->toArray());
 //    var_dump($record->setId('696292000041727818')->getAttachments());
+    var_dump($record->setId('696292000029231668')->setModule('Potentials')->getNotes());
 
 } catch (Exception $e){
     var_dump($e->getMessage());

@@ -123,6 +123,18 @@ trait ZohoRecordOperations
     }
 
     /**
+     * Gets all the attachments for the record
+     * Note that this method does NOT allow chaining methods after
+     *
+     * @return mixed
+     */
+    public function getNotes()
+    {
+        return (new ZohoMapper($this->token, 'Notes'))
+            ->getRelatedRecords($this->recordType, $this->checkId())->getRecordDetails();
+    }
+
+    /**
      * Check if the record has its ID set
      *
      * @return mixed
