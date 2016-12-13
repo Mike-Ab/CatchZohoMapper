@@ -183,10 +183,10 @@ trait ZohoModuleOperations
      * Get the record(s) from Zoho
      *
      * @param string|array $recordIds
-     * @param bool $includeNull
+     * @param bool|array $opts
      * @return ZohoResponse
      */
-    public function getRecordById($recordIds, $includeNull = false)
+    public function getRecordById($recordIds, $opts = false)
     {
         $options = (new ZohoOperationParams($this->token, $this->recordType))
             ->setWfTrigger(null);
@@ -195,8 +195,8 @@ trait ZohoModuleOperations
         }else {
             $options->setId($recordIds);
         }
-        if ($includeNull) {
-            $options->setNewFormat(1);
+        if ($opts) {
+            $options = $this->setOpts($options, $opts);
         }
         return Zoho::execute($options);
     }

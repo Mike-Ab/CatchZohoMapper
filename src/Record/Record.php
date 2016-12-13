@@ -138,5 +138,4 @@ trait Record
         return $this;
     }
 
-
 }

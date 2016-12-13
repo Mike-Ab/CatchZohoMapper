@@ -123,7 +123,7 @@ trait ZohoRecordOperations
     }
 
     /**
-     * Gets all the attachments for the record
+     * Gets all the notes for the record
      * Note that this method does NOT allow chaining methods after
      *
      * @return mixed
