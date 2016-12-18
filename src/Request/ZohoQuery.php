@@ -12,6 +12,7 @@ namespace CatchZohoMapper\Request;
 trait ZohoQuery
 {
     protected $opts = [];
+
     public function select($columns)
     {
         if($columns == '*' || strtolower($columns) == 'all'){

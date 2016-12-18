@@ -69,8 +69,12 @@ $searchCriteria = [ // [[1] OR [[2] AND[3]]]
 //$pro = (new \CatchZohoMapper\ZohoServiceProvider);
 //var_dump($pro::formSearchCriteria($searchCriteria));
 //var_dump($zoho->searchRecords($searchCriteria, $searchOptions2)->getRecordDetails());
-var_dump($zoho->getMyRecords($searchOptions2)->getRecordDetails());
-//var_dump($zoho->downloadFile('696292000043685003'));
+//var_dump($zoho->getMyRecords($searchOptions2)->getRecordDetails());
+    $search = [
+        'Email' => 'rosswilliamdunn@gmail.com'
+    ];
+    var_dump($zoho->searchRecords($search)->getRecordDetails());
+//var_dump($zoho->downloadFile('696292000043685003'));1
 $updateIds = ['696292000043529806', '696292000023479146', '696292000041727818'];
 $updates = [
     'First Name' => 'Test Only',

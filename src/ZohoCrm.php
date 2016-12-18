@@ -34,12 +34,16 @@ class ZohoCrm
      * Create the instances
      *
      * @param array $opts
+     * @param bool $checkModule
      * @return $this
      */
     public function make(array $opts, $checkModule = false)
     {
         foreach ($opts as $opt => $value){
             $this->{$opt} = $value;
+        }
+        if ($checkModule){
+            $this->checkModule = true;
         }
         $this->zoho = new ZohoMapper($this->authToken, $this->recordType, $this->checkModule);
         $this->params = new ZohoOperationParams($this->authToken, $this->recordType);
@@ -48,10 +52,13 @@ class ZohoCrm
 
     public function request()
     {
+        if (!$this->method) {
+            throw new \Exception('Zoho CRM method is not identified');
+        }
         return $this->zoho->{$this->method}($this->params);
     }
 
-    public function execut()
+    public function execute()
     {
         return $this->request();
     }

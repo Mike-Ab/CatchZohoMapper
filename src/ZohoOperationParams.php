@@ -157,14 +157,14 @@ class ZohoOperationParams
      */
     public static function reset()
     {
-        $persistant = [
+        $persistent = [
             'recordType',
             'authtoken',
             'scope'
             ];
 
         foreach (get_class_vars(self::class) as $name => $value){
-            if (!in_array($name, $persistant)) {
+            if (!in_array($name, $persistent)) {
                 self::$$name = null;
             }
         }
