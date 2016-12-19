@@ -99,7 +99,6 @@ class ZohoMapper implements ZohoModuleInterface
             $options = $this->setOpts($options, $opts);
         }
         $options->setCriteria(Zoho::formSearchCriteria($searchCriteria));
-        var_dump(Zoho::formSearchCriteria($searchCriteria));
         return Zoho::execute($options);
     }
 
