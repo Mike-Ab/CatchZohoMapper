@@ -1,19 +1,14 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: mohammada
- * Date: 12/13/2016
- * Time: 9:51 AM
- */
 
 namespace CatchZohoMapper;
 
 
+use CatchZohoMapper\Request\ZohoQuery;
 use CatchZohoMapper\ZohoCrm\ZohoMethod;
 
 class ZohoCrm
 {
-    use ZohoMethod;
+    use ZohoMethod, ZohoQuery;
 
     private $recordType;
     private $authToken;
@@ -28,6 +23,7 @@ class ZohoCrm
         if ($recordType){
             $this->recordType = $recordType;
         }
+        $this->make([]);
     }
 
     /**
@@ -61,6 +57,22 @@ class ZohoCrm
     public function execute()
     {
         return $this->request();
+    }
+
+    public function get()
+    {
+        return $this->request();
+    }
+
+    public function setRecordType($recordType)
+    {
+        $this->recordType = $recordType;
+        return $this;
+    }
+
+    public function setModule($recordType)
+    {
+        return $this->setRecordType($recordType);
     }
 
 }

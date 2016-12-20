@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: mohammada
- * Date: 11/28/2016
- * Time: 9:15 AM
- */
 use CatchZohoMapper\ZohoMapper;
 
 require ('vendor/autoload.php');
@@ -44,9 +38,6 @@ $searchCriteria = [ // [[1] OR [[2] AND[3]]]
     [
         'Last Name' => 'testtt',
         'Lead Status' => 'Junk Lead',
-//        'test' => [ // this is not allowed
-//            'Active in the system' => 'Open'
-//        ],
     ],
     [
         'First Name' => 'testttt'
