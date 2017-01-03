@@ -19,8 +19,8 @@ interface ZohoRequest
     public function includeNull();
     public function triggerWorkflow();
     public function selectColumns($columns); // array or string
-    public function fromIndex($columns); // array or string
-    public function toIndex($columns); // array or string
+    public function fromIndex($index); // array or string
+    public function toIndex($index); // array or string
     public function sortBy($columnsName); // string
     public function sortOrder($order); // Asc , Ascending , Desc, Descending
     public function ApprovalQueue();
@@ -37,7 +37,7 @@ interface ZohoRequest
     public function from($module); // array or string
     public function where(array $condition);
     public function orWhere(array $condition);
-    public function orderBy($columnsName); // alias
+    public function orderBy($columnsName, $order); // alias
     public function limit($limit); // array or string
     public function offset($offset); // array or string
 

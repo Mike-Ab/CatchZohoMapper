@@ -17,4 +17,5 @@ interface ZohoRecordInterface
     public function toArray(); //
     public function attachFile($filePath, $url); //
     public function getAttachments(); //
+    public function getNotes(); //
 }

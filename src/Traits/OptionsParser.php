@@ -14,7 +14,7 @@ use CatchZohoMapper\ZohoServiceProvider as Zoho;
 
 trait OptionsParser
 {
-    private function setOpts (ZohoOperationParams $options, array $opts)
+    public function setOpts (ZohoOperationParams $options, array $opts)
     {
         if (array_key_exists('duplicateCheck', $opts)) {
             if (!$opts['duplicateCheck']){
