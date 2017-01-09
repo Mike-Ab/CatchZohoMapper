@@ -8,7 +8,7 @@
 
 namespace CatchZohoMapper\Module;
 
-use CatchZohoMapper\ZohoMapper;
+use CatchZohoMapper\CatchZohoCRM;
 
 class ZohoModule
 {
@@ -63,7 +63,7 @@ class ZohoModule
 
     public function fetchMandatory($authToken)
     {
-        return (new ZohoMapper($authToken, $this->moduleName))
+        return (new CatchZohoCRM($authToken, $this->moduleName))
             ->getFields(true)
             ->getModule()
             ->getFields();

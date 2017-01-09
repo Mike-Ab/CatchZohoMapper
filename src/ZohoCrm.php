@@ -41,7 +41,7 @@ class ZohoCrm
         if ($checkModule){
             $this->checkModule = true;
         }
-        $this->zoho = new ZohoMapper($this->authToken, $this->recordType, $this->checkModule);
+        $this->zoho = new CatchZohoCRM($this->authToken, $this->recordType, $this->checkModule);
         $this->params = new ZohoOperationParams($this->authToken, $this->recordType);
         return $this;
     }

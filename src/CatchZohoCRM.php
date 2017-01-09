@@ -8,7 +8,7 @@ use CatchZohoMapper\Traits\Singleton;
 use CatchZohoMapper\Traits\ZohoModuleOperations;
 use CatchZohoMapper\ZohoServiceProvider as Zoho;
 
-class ZohoMapper implements ZohoModuleInterface
+class CatchZohoCRM implements ZohoModuleInterface
 {
     use ZohoModuleOperations, FileOperations, Singleton;
 
@@ -23,7 +23,7 @@ class ZohoMapper implements ZohoModuleInterface
     protected $recordType;
 
     /**
-     * ZohoMapper constructor.
+     * CatchZohoCRM constructor.
      *
      * @param string $token
      * @param string $recordType

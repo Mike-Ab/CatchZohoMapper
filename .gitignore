@@ -2,5 +2,5 @@ composer.phar
 /vendor/
 /.idea
 # composer.lock
-_test.php
-_test-stream2.php
+test*
+catch-zoho-mapper-autoload.php

@@ -4,7 +4,7 @@ namespace CatchZohoMapper\Record;
 use CatchZohoMapper\Traits\Commons;
 use CatchZohoMapper\Traits\FileOperations;
 use CatchZohoMapper\Traits\ZohoModuleOperations;
-use CatchZohoMapper\ZohoMapper;
+use CatchZohoMapper\CatchZohoCRM;
 use CatchZohoMapper\Response\ZohoResponse;
 use CatchZohoMapper\ZohoServiceProvider as Zoho;
 
@@ -118,7 +118,7 @@ trait ZohoRecordOperations
      */
     public function getAttachments()
     {
-        return (new ZohoMapper($this->token, 'Attachments'))
+        return (new CatchZohoCRM($this->token, 'Attachments'))
         ->getRelatedRecords($this->recordType, $this->checkId())->getRecordDetails();
     }
 
@@ -130,7 +130,7 @@ trait ZohoRecordOperations
      */
     public function getNotes()
     {
-        return (new ZohoMapper($this->token, 'Notes'))
+        return (new CatchZohoCRM($this->token, 'Notes'))
             ->getRelatedRecords($this->recordType, $this->checkId())->getRecordDetails();
     }
 
