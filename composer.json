@@ -1,5 +1,5 @@
 {
-    "name": "catch/catch-zoho-crm",
+    "name": "catch/zoho-crm",
     "description": "A simple ZOHO CRM API wrapper to easily handle requests and translate responses",
     "require": {
         "php": ">=5.5.0",
