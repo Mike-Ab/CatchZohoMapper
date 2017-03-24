@@ -1,6 +1,7 @@
 <?php
 
 namespace CatchZohoMapper;
+use CatchZohoMapper\Interfaces\ZohoApiMethods;
 use CatchZohoMapper\Response\ZohoResponse;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -31,19 +32,29 @@ class ZohoServiceProvider
      */
     public static function generateURL($module, $responseType = 'json')
     {
-        if (isset(debug_backtrace()[3]['function']) && debug_backtrace()[3]['function'] != 'attachFile') {
-            $index = 3;
-            if (debug_backtrace()[3]['function'] == "getModules") {
-                $module = 'Info';
-            }
-        }else {
-            // the call has been made from request itself
-            $index = 2;
+        $method = 'NoMethod';
+        for ($i = 0 ; $i < 100 ; $i ++){
+            if (ZohoApiMethods::isZohoMethod(debug_backtrace()[$i]['function'])){
+                $method = debug_backtrace()[$i]['function'];
+                if ($method == "getModules") {
+                    $module = 'Info';
+                }
+                break;
+            };
         }
+//        if (isset(debug_backtrace()[3]['function']) && debug_backtrace()[3]['function'] != 'attachFile') {
+//            $index = 3;
+//            if (debug_backtrace()[3]['function'] == "getModules") {
+//                $module = 'Info';
+//            }
+//        }else {
+//            // the call has been made from request itself
+//            $index = 2;
+//        }
         return 'https://crm.zoho.com/crm/private/'
             .$responseType.'/'
             .$module.'/'
-            .debug_backtrace()[$index]['function'];
+            .$method;
     }
     
     /**
