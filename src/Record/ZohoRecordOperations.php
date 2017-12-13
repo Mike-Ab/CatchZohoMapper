@@ -87,7 +87,7 @@ trait ZohoRecordOperations
      * Provides ZohoModule instance containing all the module details
      * accessible by getModule(). Also provides the fields in RecordDetails
      *
-     * @return ZohoResponse
+     * @return array
      */
     public function describe()
     {
@@ -132,6 +132,19 @@ trait ZohoRecordOperations
     {
         return (new ZohoMapper($this->token, 'Notes'))
             ->getRelatedRecords($this->recordType, $this->checkId())->getRecordDetails();
+    }
+
+    /**
+     * Get any related records described
+     * @param string $relatedRecordType (Required Zoho Original Module Name)
+     *
+     * @return array
+     */
+    public function getRelated($relatedRecordType)
+    {
+        return (new ZohoMapper($this->token, $relatedRecordType))
+            ->getRelatedRecords($this->recordType, $this->checkId())
+            ->getRecordDetails();
     }
 
     /**

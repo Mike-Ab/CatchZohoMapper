@@ -142,7 +142,6 @@ class ZohoResponse implements ZohoResponseOperationsInterface
      */
     public function handleResponse($responseObject = false, $recordType = false)
     {
-
         if ($responseObject) {
             $this->responseObject = $responseObject;
         }
