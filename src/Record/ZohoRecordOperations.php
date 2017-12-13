@@ -87,7 +87,7 @@ trait ZohoRecordOperations
      * Provides ZohoModule instance containing all the module details
      * accessible by getModule(). Also provides the fields in RecordDetails
      *
-     * @return ZohoResponse
+     * @return array
      */
     public function describe()
     {
@@ -96,14 +96,15 @@ trait ZohoRecordOperations
 
     /**
      * @param $filePath
-     * @param bool $attchementUrl
+     * @param bool $attachmentUrl
+     *
      * @return $this
      * @throws \Exception
      */
-    public function attachFile($filePath, $attchementUrl = false)
+    public function attachFile($filePath, $attachmentUrl = false)
     {
         try {
-            $this->uploadFile($this->checkId(), $filePath, $attchementUrl);
+            $this->uploadFile($this->checkId(), $filePath, $attachmentUrl);
         }catch (\Exception $e){
             throw new \Exception($e->getMessage(), $e->getCode());
         }
@@ -132,6 +133,19 @@ trait ZohoRecordOperations
     {
         return (new CatchZohoCRM($this->token, 'Notes'))
             ->getRelatedRecords($this->recordType, $this->checkId())->getRecordDetails();
+    }
+
+    /**
+     * Get any related records described
+     * @param string $relatedRecordType (Required Zoho Original Module Name)
+     *
+     * @return array
+     */
+    public function getRelated($relatedRecordType)
+    {
+        return (new CatchZohoCRM($this->token, $relatedRecordType))
+            ->getRelatedRecords($this->recordType, $this->checkId())
+            ->getRecordDetails();
     }
 
     /**

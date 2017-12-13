@@ -9,6 +9,7 @@
 namespace CatchZohoMapper\Response;
 
 
+use CatchZohoMapper\Interfaces\ZohoApiMethods;
 use CatchZohoMapper\Interfaces\ZohoResponseOperationsInterface;
 use CatchZohoMapper\Module\ZohoModule;
 use CatchZohoMapper\ZohoErrors;
@@ -149,10 +150,25 @@ class ZohoResponse implements ZohoResponseOperationsInterface
         if ($recordType) {
             $this->recordType = $recordType;
         }
-        $operation = debug_backtrace()[2]['function'];
+        $operation = $this->getApiMethod();
         $this->responseObject = (json_decode($this->responseObject, true));
         self::checkForErrors($this->responseObject);
         return $this->parse($operation);
+    }
+
+    /**
+     * @return mixed
+     */
+    private function getApiMethod()
+    {
+        $method = 'NoMethod';
+        for ($i = 0 ; $i < 200 ; $i ++){
+            if (ZohoApiMethods::isZohoMethod(debug_backtrace()[$i]['function'])){
+                $method = debug_backtrace()[$i]['function'];
+                break;
+            };
+        }
+        return $method;
     }
 
     /**
@@ -164,7 +180,8 @@ class ZohoResponse implements ZohoResponseOperationsInterface
     private function populateResponse(ZohoResponseParser $parsedResponse)
     {
         $this->response = $parsedResponse->response;
-        $this->recordDetails = $parsedResponse->parsedResponse['recordDetails'];
+        $this->recordDetails = array_key_exists('recordDetails', $parsedResponse->parsedResponse ) ?
+            $parsedResponse->parsedResponse['recordDetails'] : '';
         $this->message = $parsedResponse->parsedResponse['message'];
         $this->uri = $parsedResponse->parsedResponse['uri'];
         $this->module = $parsedResponse->module;

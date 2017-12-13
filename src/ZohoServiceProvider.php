@@ -33,7 +33,7 @@ class ZohoServiceProvider
     public static function generateURL($module, $responseType = 'json')
     {
         $method = 'NoMethod';
-        for ($i = 0 ; $i < 100 ; $i ++){
+        for ($i = 0 ; $i < 200 ; $i ++){
             if (ZohoApiMethods::isZohoMethod(debug_backtrace()[$i]['function'])){
                 $method = debug_backtrace()[$i]['function'];
                 if ($method == "getModules") {
@@ -42,15 +42,6 @@ class ZohoServiceProvider
                 break;
             };
         }
-//        if (isset(debug_backtrace()[3]['function']) && debug_backtrace()[3]['function'] != 'attachFile') {
-//            $index = 3;
-//            if (debug_backtrace()[3]['function'] == "getModules") {
-//                $module = 'Info';
-//            }
-//        }else {
-//            // the call has been made from request itself
-//            $index = 2;
-//        }
         return 'https://crm.zoho.com/crm/private/'
             .$responseType.'/'
             .$module.'/'
