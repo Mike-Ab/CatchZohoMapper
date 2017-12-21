@@ -81,7 +81,7 @@ class ZohoServiceProvider
         $noCDATAVal = ['true', 'false'];
         foreach ($row as $key => $val) {
             $val = str_replace('&', 'and', $val);
-            if (in_array($key, $noCDATAKey) || in_array($val, $noCDATAVal)){
+            if (in_array($key, $noCDATAKey) || in_array($val, $noCDATAVal) || strpos($key, 'ID')){
                 $xml .= "<FL val='$key'>$val</FL>";
             }else {
                 $xml .= "<FL val='$key'><![CDATA[$val]]></FL>";
