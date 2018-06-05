@@ -175,6 +175,8 @@ class ZohoOperationParams
     /**
      * @param array $idList
      * @return $this
+     *
+     * @todo throw exception on empty array
      */
     public function setIdList (array $idList)
     {

@@ -39,8 +39,8 @@ trait OptionsParser
         if (array_key_exists('newFormat', $opts)) {
             $options->setNewFormat($opts['newFormat']);
         }
-        if (array_key_exists('includeNull', $opts)) {
-            $options->setNewFormat($opts['includeNull'] ? 1 : 2);
+        if (array_key_exists('includeNull', $opts) || in_array('includeNull', $opts)) {
+            $options->setNewFormat(2);
         }
         if (array_key_exists('fromIndex', $opts)){
             $options->setFromIndex($opts['fromIndex']);
