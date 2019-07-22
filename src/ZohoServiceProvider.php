@@ -29,23 +29,30 @@ class ZohoServiceProvider
      * @param string $module
      * @param string $responseType
      * @return string the URL for the API call to be made
+     *
+     * @throws \Exception
      */
     public static function generateURL($module, $responseType = 'json')
     {
-        $method = 'NoMethod';
-        for ($i = 0 ; $i < 200 ; $i ++){
-            if (ZohoApiMethods::isZohoMethod(debug_backtrace()[$i]['function'])){
-                $method = debug_backtrace()[$i]['function'];
-                if ($method == "getModules") {
-                    $module = 'Info';
-                }
-                break;
-            };
+        try {
+            $method = 'NoMethod';
+            for ( $i = 0; $i < 200; $i ++ ) {
+                if ( ZohoApiMethods::isZohoMethod(debug_backtrace()[ $i ]['function']) ) {
+                    $method = debug_backtrace()[ $i ]['function'];
+                    if ( $method == "getModules" ) {
+                        $module = 'Info';
+                    }
+                    break;
+                };
+            }
+
+            return 'https://crm.zoho.com/crm/private/'
+                   . $responseType . '/'
+                   . $module . '/'
+                   . $method;
+        } catch (\Exception $e){
+            throw new \Exception('Zoho method not found or is Not supported');
         }
-        return 'https://crm.zoho.com/crm/private/'
-            .$responseType.'/'
-            .$module.'/'
-            .$method;
     }
     
     /**

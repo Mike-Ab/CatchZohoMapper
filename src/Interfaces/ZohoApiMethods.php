@@ -123,4 +123,19 @@ class ZohoApiMethods implements ZohoModuleInterface
         //
     }
 
+    /**
+     * Gets all available models
+     */
+    public function getModules()
+    {
+        //
+    }
+
+    /**
+     * Gets the users
+     */
+    public function getUsers()
+    {
+        //
+    }
 }

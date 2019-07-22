@@ -51,6 +51,10 @@ class ZohoErrors
 
     public static function getMessage($errorCode)
     {
-        return self::$errors[$errorCode];
+        if(array_key_exists($errorCode, self::$errors)) {
+            return self::$errors[$errorCode];
+        }else {
+            return 'Unexpected Zoho error returned. Error Code: '.$errorCode;
+        }
     }
 }

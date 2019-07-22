@@ -17,6 +17,8 @@ interface ZohoModuleInterface
     public function downloadFile($fileId);//
     public function deleteFile($fileId);//
     public function searchRecords(array $searchCriteria, $opts);//
+    public function getModules();//
+    public function getUsers();//
     /**
      * @TODO implement updateRelatedRecords
      */
